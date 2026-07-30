@@ -122,6 +122,47 @@ function cargarPartida() {
   }
 }
 
+// ── EXPORTAR / IMPORTAR PARTIDA (archivo JSON) ──
+function exportarPartida() {
+  const data = JSON.stringify({ xp: xpTotalJugador }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'partida-odisea-haikus-gnosticos.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importarPartidaArchivo(event) {
+  const file = event.target.files[0];
+  const status = document.getElementById('save-status');
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (typeof data.xp !== 'number' || data.xp < 0) {
+        status.textContent = 'Archivo inválido.';
+        status.style.color = 'var(--red-bright)';
+        return;
+      }
+      xpTotalJugador = data.xp;
+      renderState();
+      guardarPartida();
+      const nivel = findLevelByXp(xpTotalJugador);
+      status.textContent = 'Partida cargada: Nivel ' + nivel.n + ' — ' + nivel.t;
+      status.style.color = 'var(--green-magic)';
+    } catch (err) {
+      status.textContent = 'No se pudo leer el archivo.';
+      status.style.color = 'var(--red-bright)';
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
 function renderState() {
   const nivel = findLevelByXp(xpTotalJugador);
   const sig = nextLevel(nivel.n);

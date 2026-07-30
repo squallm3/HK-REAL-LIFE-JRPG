@@ -146,6 +146,16 @@ h1 {
 #password-input:focus { border-color: var(--gold); }
 #password-status { font-size: 11px; margin-top: 6px; letter-spacing: 1px; }
 
+#save-panel { background: var(--dark2); border: 2px solid var(--gold-dim); padding: 10px 16px; margin: 8px 0; position: relative; }
+#save-panel::before {
+  content: '💾 GUARDAR / CARGAR PARTIDA';
+  position: absolute; top: -10px; left: 16px;
+  background: var(--dark2); padding: 0 8px; color: var(--gold);
+  font-size: 10px; letter-spacing: 2px;
+}
+.save-row { display: flex; gap: 8px; align-items: center; }
+#save-status { font-size: 11px; letter-spacing: 1px; }
+
 #chat-window { flex: 1; background: var(--dark2); border: 2px solid var(--gold-dim); position: relative; overflow: hidden; min-height: 420px; margin: 4px 0; }
 #chat-window::before { content: ''; position: absolute; inset: 4px; border: 1px solid rgba(201,168,76,0.1); pointer-events: none; z-index: 2; }
 

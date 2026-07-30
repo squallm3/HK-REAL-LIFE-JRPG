@@ -40,6 +40,15 @@
     <div id="password-status"></div>
   </div>
 
+  <div id="save-panel">
+    <div class="save-row">
+      <button class="send-btn" onclick="exportarPartida()" title="Descargar partida">💾</button>
+      <label class="send-btn" for="import-file-input" title="Cargar partida" style="cursor:pointer;">📂</label>
+      <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importarPartidaArchivo(event)">
+      <span id="save-status"></span>
+    </div>
+  </div>
+
   <div class="rune-line"></div>
 
   <div id="chat-window" class="pixel-border">
