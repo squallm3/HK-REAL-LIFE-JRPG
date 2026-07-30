@@ -151,9 +151,10 @@ function renderState() {
   }
 }
 
-// ── IMÁGENES (formato 4:5, se ignoran silenciosamente si no existen todavía) ──
-function imgNivel(n) { return 'assets/niveles/' + n + '-nivel.png'; }
-function imgArtefacto(n) { return 'assets/niveles/' + n + '-artefacto.png'; }
+// ── IMÁGENES: nivel_NN_a.jpg (personaje/nivel) y nivel_NN_b.jpg (artefacto), NN con 2 dígitos ──
+function pad2(n) { return String(n).padStart(2, '0'); }
+function imgNivel(n) { return 'assets/niveles/nivel_' + pad2(n) + '_a.jpg'; }
+function imgArtefacto(n) { return 'assets/niveles/nivel_' + pad2(n) + '_b.jpg'; }
 
 // ── MODAL DE ESTADO / INVENTARIO ──
 function abrirModalEstado() {
