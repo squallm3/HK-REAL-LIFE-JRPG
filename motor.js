@@ -151,12 +151,10 @@ function renderState() {
   }
 }
 
-// ── IMÁGENES: nivel_NN_a.jpg (personaje) y nivel_NN_b.jpg (artefacto), NN con 2 dígitos ──
 function pad2(n) { return String(n).padStart(2, '0'); }
 function imgNivel(n) { return 'assets/niveles/nivel_' + pad2(n) + '_a.jpg'; }
 function imgArtefacto(n) { return 'assets/niveles/nivel_' + pad2(n) + '_b.jpg'; }
 
-// ── LIGHTBOX (imagen a pantalla completa) ──
 function abrirLightbox(src, alt) {
   const img = document.getElementById('lightbox-img');
   img.src = src;
@@ -177,7 +175,6 @@ function crearImagenClickeable(src, alt, className) {
   return img;
 }
 
-// ── MODAL DE ESTADO / INVENTARIO ──
 function abrirModalEstado() {
   renderModalEstado();
   document.getElementById('estado-modal-overlay').classList.remove('hidden');
@@ -203,7 +200,6 @@ function renderModalEstado() {
 
   document.getElementById('modal-titulo-nivel').textContent = 'Nivel ' + nivel.n;
 
-  // ── Personaje actual ──
   const personajeActual = document.getElementById('modal-personaje-actual');
   personajeActual.innerHTML = '';
   const wrapP = document.createElement('div');
@@ -215,7 +211,6 @@ function renderModalEstado() {
   wrapP.appendChild(nombreP);
   personajeActual.appendChild(wrapP);
 
-  // ── Artefacto actual ──
   const artefactoActual = document.getElementById('modal-artefacto-actual');
   artefactoActual.innerHTML = '';
   const wrapA = document.createElement('div');
@@ -231,7 +226,6 @@ function renderModalEstado() {
   wrapA.appendChild(descA);
   artefactoActual.appendChild(wrapA);
 
-  // ── Histórico (scrolleable, en paralelo en ambas columnas) ──
   const histPersonaje = document.getElementById('modal-personaje-historico');
   const histArtefacto = document.getElementById('modal-artefacto-historico');
   histPersonaje.innerHTML = '';
@@ -351,7 +345,7 @@ function appendValisTurno(resultado) {
 
   const fragmento = document.createElement('div');
   fragmento.className = 'fragmento-text';
-  fragmento.textContent = '(fragmento narrativo pendiente — tarea 4)';
+  fragmento.textContent = FRAGMENTOS[resultado.nivelDespues.n] || '';
   inner.appendChild(fragmento);
 
   bubbleDiv.appendChild(name);
