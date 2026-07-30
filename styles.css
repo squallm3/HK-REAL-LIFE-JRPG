@@ -240,28 +240,54 @@ footer { text-align: center; padding: 8px 0; font-size: 10px; color: var(--text-
   max-width: 420px; width: 100%; max-height: 82vh; overflow-y: auto;
   padding: 20px; position: relative;
 }
+.modal-box-wide { max-width: 640px; }
 .modal-box::-webkit-scrollbar { width: 6px; }
 .modal-box::-webkit-scrollbar-track { background: var(--dark); }
 .modal-box::-webkit-scrollbar-thumb { background: var(--gold-dim); }
 .modal-close {
   position: absolute; top: 10px; right: 10px; background: none; border: none;
-  color: var(--gold); font-size: 16px; cursor: pointer; line-height: 1;
+  color: var(--gold); font-size: 16px; cursor: pointer; line-height: 1; z-index: 2;
 }
 .modal-close:hover { color: var(--gold-bright); }
-.modal-nivel-header { display: flex; gap: 12px; margin-bottom: 14px; align-items: center; }
-.modal-img-box {
-  width: 80px; aspect-ratio: 4 / 5; background: var(--dark3);
-  border: 1px solid var(--gold-dim); overflow: hidden; flex-shrink: 0;
+
+.modal-titulo {
+  text-align: center; font-size: 16px; color: var(--gold-bright);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; font-family: inherit;
 }
-.modal-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.modal-artefacto-row { display: flex; gap: 12px; align-items: center; margin: 14px 0; }
-.modal-desc { font-size: 12px; color: var(--text-body); font-style: italic; line-height: 1.5; margin-top: 4px; }
-.modal-divider { height: 1px; background: var(--gold-dim); opacity: 0.4; margin: 16px 0 12px; }
-.modal-section-label { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-.inventario-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(201,168,76,0.15); }
-.inventario-item img {
-  width: 40px; aspect-ratio: 4 / 5; object-fit: cover;
-  border: 1px solid var(--gold-dim); flex-shrink: 0; display: block;
+
+.modal-columnas { display: flex; gap: 16px; }
+.modal-columna { flex: 1; min-width: 0; }
+.modal-columna-label {
+  font-size: 10px; color: var(--gold); letter-spacing: 2px;
+  text-transform: uppercase; text-align: center; margin-bottom: 8px;
 }
-.inventario-item .inv-nombre { font-size: 12px; color: var(--gold-bright); margin: 0; }
-.inventario-item .inv-nivel { font-size: 10px; color: var(--text-dim); margin: 0; }
+.modal-item-actual { text-align: center; margin-bottom: 10px; }
+.modal-item-actual img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover;
+  border: 1px solid var(--gold-dim); cursor: pointer; display: block;
+}
+.modal-item-actual .item-nombre { font-size: 12px; color: var(--gold-bright); margin-top: 6px; }
+.modal-desc { font-size: 11px; color: var(--text-body); font-style: italic; line-height: 1.5; margin-top: 4px; }
+
+.modal-divider { height: 1px; background: var(--gold-dim); opacity: 0.4; margin: 12px 0; }
+
+.modal-columna-scroll {
+  max-height: 260px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 10px;
+  padding-right: 4px;
+}
+.modal-columna-scroll::-webkit-scrollbar { width: 5px; }
+.modal-columna-scroll::-webkit-scrollbar-track { background: var(--dark); }
+.modal-columna-scroll::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+
+.modal-hist-item { text-align: center; }
+.modal-hist-item img {
+  width: 100%; aspect-ratio: 4 / 5; object-fit: cover;
+  border: 1px solid var(--gold-dim); cursor: pointer; display: block;
+}
+.modal-hist-item .hist-nombre { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+.lightbox-img {
+  max-width: 90vw; max-height: 85vh;
+  border: 2px solid var(--gold-dim); object-fit: contain;
+}

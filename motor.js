@@ -151,10 +151,31 @@ function renderState() {
   }
 }
 
-// ── IMÁGENES: nivel_NN_a.jpg (personaje/nivel) y nivel_NN_b.jpg (artefacto), NN con 2 dígitos ──
+// ── IMÁGENES: nivel_NN_a.jpg (personaje) y nivel_NN_b.jpg (artefacto), NN con 2 dígitos ──
 function pad2(n) { return String(n).padStart(2, '0'); }
 function imgNivel(n) { return 'assets/niveles/nivel_' + pad2(n) + '_a.jpg'; }
 function imgArtefacto(n) { return 'assets/niveles/nivel_' + pad2(n) + '_b.jpg'; }
+
+// ── LIGHTBOX (imagen a pantalla completa) ──
+function abrirLightbox(src, alt) {
+  const img = document.getElementById('lightbox-img');
+  img.src = src;
+  img.alt = alt;
+  document.getElementById('lightbox-overlay').classList.remove('hidden');
+}
+function cerrarLightbox() {
+  document.getElementById('lightbox-overlay').classList.add('hidden');
+}
+
+function crearImagenClickeable(src, alt, className) {
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = alt;
+  if (className) img.className = className;
+  img.onerror = function() { this.style.display = 'none'; };
+  img.addEventListener('click', function() { abrirLightbox(src, alt); });
+  return img;
+}
 
 // ── MODAL DE ESTADO / INVENTARIO ──
 function abrirModalEstado() {
@@ -171,45 +192,72 @@ function cerrarModalEstadoOverlay(e) {
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') cerrarModalEstado();
+  if (e.key === 'Escape') {
+    cerrarLightbox();
+    cerrarModalEstado();
+  }
 });
 
 function renderModalEstado() {
   const nivel = findLevelByXp(xpTotalJugador);
 
-  const actual = document.getElementById('modal-nivel-actual');
-  actual.innerHTML = `
-    <div class="modal-nivel-header">
-      <div class="modal-img-box"><img src="${imgNivel(nivel.n)}" alt="Nivel ${nivel.n}" onerror="this.parentElement.style.display='none'"></div>
-      <div>
-        <p style="font-size:11px; color:var(--gold-dim); margin:0 0 2px;">Nivel ${nivel.n}</p>
-        <p style="font-size:15px; color:var(--gold-bright); margin:0;">${nivel.t}</p>
-      </div>
-    </div>
-    <div class="modal-artefacto-row">
-      <div class="modal-img-box"><img src="${imgArtefacto(nivel.n)}" alt="${nivel.art}" onerror="this.parentElement.style.display='none'"></div>
-      <div>
-        <p style="font-size:13px; color:var(--gold-bright); margin:0 0 4px;">${nivel.art}</p>
-        <p class="modal-desc">${nivel.desc}</p>
-      </div>
-    </div>
-  `;
+  document.getElementById('modal-titulo-nivel').textContent = 'Nivel ' + nivel.n;
 
-  const lista = document.getElementById('modal-inventario-lista');
-  lista.innerHTML = '';
+  // ── Personaje actual ──
+  const personajeActual = document.getElementById('modal-personaje-actual');
+  personajeActual.innerHTML = '';
+  const wrapP = document.createElement('div');
+  wrapP.className = 'modal-item-actual';
+  wrapP.appendChild(crearImagenClickeable(imgNivel(nivel.n), nivel.t));
+  const nombreP = document.createElement('p');
+  nombreP.className = 'item-nombre';
+  nombreP.textContent = nivel.t;
+  wrapP.appendChild(nombreP);
+  personajeActual.appendChild(wrapP);
+
+  // ── Artefacto actual ──
+  const artefactoActual = document.getElementById('modal-artefacto-actual');
+  artefactoActual.innerHTML = '';
+  const wrapA = document.createElement('div');
+  wrapA.className = 'modal-item-actual';
+  wrapA.appendChild(crearImagenClickeable(imgArtefacto(nivel.n), nivel.art));
+  const nombreA = document.createElement('p');
+  nombreA.className = 'item-nombre';
+  nombreA.textContent = nivel.art;
+  wrapA.appendChild(nombreA);
+  const descA = document.createElement('p');
+  descA.className = 'modal-desc';
+  descA.textContent = nivel.desc;
+  wrapA.appendChild(descA);
+  artefactoActual.appendChild(wrapA);
+
+  // ── Histórico (scrolleable, en paralelo en ambas columnas) ──
+  const histPersonaje = document.getElementById('modal-personaje-historico');
+  const histArtefacto = document.getElementById('modal-artefacto-historico');
+  histPersonaje.innerHTML = '';
+  histArtefacto.innerHTML = '';
+
   for (let n = nivel.n - 1; n >= 1; n--) {
     const lvl = LEVELS.find(l => l.n === n);
     if (!lvl) continue;
-    const item = document.createElement('div');
-    item.className = 'inventario-item';
-    item.innerHTML = `
-      <img src="${imgArtefacto(lvl.n)}" alt="${lvl.art}" onerror="this.style.display='none'">
-      <div>
-        <p class="inv-nombre">${lvl.art}</p>
-        <p class="inv-nivel">Nivel ${lvl.n} — ${lvl.t}</p>
-      </div>
-    `;
-    lista.appendChild(item);
+
+    const itemP = document.createElement('div');
+    itemP.className = 'modal-hist-item';
+    itemP.appendChild(crearImagenClickeable(imgNivel(lvl.n), lvl.t));
+    const nombreHistP = document.createElement('p');
+    nombreHistP.className = 'hist-nombre';
+    nombreHistP.textContent = 'Nivel ' + lvl.n + ' — ' + lvl.t;
+    itemP.appendChild(nombreHistP);
+    histPersonaje.appendChild(itemP);
+
+    const itemA = document.createElement('div');
+    itemA.className = 'modal-hist-item';
+    itemA.appendChild(crearImagenClickeable(imgArtefacto(lvl.n), lvl.art));
+    const nombreHistA = document.createElement('p');
+    nombreHistA.className = 'hist-nombre';
+    nombreHistA.textContent = lvl.art;
+    itemA.appendChild(nombreHistA);
+    histArtefacto.appendChild(itemA);
   }
 }
 

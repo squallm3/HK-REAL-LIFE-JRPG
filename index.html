@@ -73,13 +73,28 @@
 </div>
 
 <div id="estado-modal-overlay" class="modal-overlay hidden" onclick="cerrarModalEstadoOverlay(event)">
-  <div class="modal-box" onclick="event.stopPropagation()">
+  <div class="modal-box modal-box-wide" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="cerrarModalEstado()" aria-label="Cerrar">✕</button>
-    <div id="modal-nivel-actual"></div>
-    <div class="modal-divider"></div>
-    <p class="modal-section-label">⚜ Artefactos anteriores</p>
-    <div id="modal-inventario-lista"></div>
+    <h2 id="modal-titulo-nivel" class="modal-titulo"></h2>
+    <div class="modal-columnas">
+      <div class="modal-columna">
+        <p class="modal-columna-label">Personaje</p>
+        <div id="modal-personaje-actual"></div>
+        <div class="modal-divider"></div>
+        <div id="modal-personaje-historico" class="modal-columna-scroll"></div>
+      </div>
+      <div class="modal-columna">
+        <p class="modal-columna-label">Artefacto</p>
+        <div id="modal-artefacto-actual"></div>
+        <div class="modal-divider"></div>
+        <div id="modal-artefacto-historico" class="modal-columna-scroll"></div>
+      </div>
+    </div>
   </div>
+</div>
+
+<div id="lightbox-overlay" class="modal-overlay hidden" onclick="cerrarLightbox()">
+  <img id="lightbox-img" src="" alt="" class="lightbox-img">
 </div>
 
 <script src="motor.js"></script>
