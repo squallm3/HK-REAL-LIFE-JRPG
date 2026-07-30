@@ -78,54 +78,17 @@ function levelsCrossed(xpBefore, xpAfter) {
   return crossed;
 }
 
-function parseSingleEntry(text) {
-  const numMatch = text.match(/\d+/);
-  if (!numMatch) {
-    return {error: true, message: "Ingresá un número de XP y una palabra que describa la tarea. Ejemplo: +50 por lavar los platos"};
-  }
-  const xp = parseInt(numMatch[0], 10);
-  const desc = text.replace(numMatch[0], "").replace(/^[+\-]?\s*/, "").trim();
-  if (!desc) {
-    return {error: true, message: "Ingresá también una palabra que describa la tarea junto al número. Ejemplo: +50 por lavar los platos"};
-  }
-  return {error: false, xp, desc};
-}
-
-function parseInput(rawText) {
-  const texto = (rawText || "").trim();
-  const cantidadNumeros = (texto.match(/\d+/g) || []).length;
-  if (cantidadNumeros === 0) {
-    return {error: true, message: "Ingresá un número de XP y una palabra que describa la tarea. Ejemplo: +50 por lavar los platos"};
-  }
-  if (cantidadNumeros > 1 && !texto.includes(",")) {
-    return {error: true, message: "Parece que estás cargando más de una tarea en el mismo mensaje. Separalas con comas. Ejemplo: +50 por lavar los platos, +30 por leer 10 páginas"};
-  }
-  const partes = texto.split(",").map(p => p.trim()).filter(p => p.length > 0);
-  const entradas = [];
-  for (const parte of partes) {
-    const parsed = parseSingleEntry(parte);
-    if (parsed.error) return parsed;
-    entradas.push(parsed);
-  }
-  const xpTotal = entradas.reduce((suma, e) => suma + e.xp, 0);
-  return {error: false, entradas, xpTotal};
-}
-
-function procesarTurno(xpActual, textoInput) {
-  const resultadoInput = parseInput(textoInput);
-  if (resultadoInput.error) {
-    return {error: true, message: resultadoInput.message};
-  }
+// ── PROCESA UNA TAREA ESTRUCTURADA (selector de XP + descripción) ──
+function procesarTarea(xpActual, xpGanada, descripcion) {
   const xpAntes = xpActual;
-  const xpDespues = xpActual + resultadoInput.xpTotal;
+  const xpDespues = xpActual + xpGanada;
   const nivelAntes = findLevelByXp(xpAntes);
   const nivelDespues = findLevelByXp(xpDespues);
   const nivelesSubidos = levelsCrossed(xpAntes, xpDespues);
   const siguienteNivel = nextLevel(nivelDespues.n);
   return {
-    error: false,
-    entradas: resultadoInput.entradas,
-    xpGanada: resultadoInput.xpTotal,
+    descripcion,
+    xpGanada,
     xpAntes, xpDespues, nivelAntes, nivelDespues, nivelesSubidos,
     subioDeNivel: nivelesSubidos.length > 0,
     faltanParaSiguiente: siguienteNivel ? siguienteNivel.xp - xpDespues : 0,
@@ -200,6 +163,7 @@ function renderModalEstado() {
 
   document.getElementById('modal-titulo-nivel').textContent = 'Nivel ' + nivel.n;
 
+  // ── Personaje actual (imagen + nombre, sin descripción) ──
   const personajeActual = document.getElementById('modal-personaje-actual');
   personajeActual.innerHTML = '';
   const wrapP = document.createElement('div');
@@ -211,6 +175,7 @@ function renderModalEstado() {
   wrapP.appendChild(nombreP);
   personajeActual.appendChild(wrapP);
 
+  // ── Artefacto actual (imagen + nombre, SIN descripción — corregido) ──
   const artefactoActual = document.getElementById('modal-artefacto-actual');
   artefactoActual.innerHTML = '';
   const wrapA = document.createElement('div');
@@ -220,12 +185,9 @@ function renderModalEstado() {
   nombreA.className = 'item-nombre';
   nombreA.textContent = nivel.art;
   wrapA.appendChild(nombreA);
-  const descA = document.createElement('p');
-  descA.className = 'modal-desc';
-  descA.textContent = nivel.desc;
-  wrapA.appendChild(descA);
   artefactoActual.appendChild(wrapA);
 
+  // ── Histórico (scrolleable, en paralelo en ambas columnas) ──
   const histPersonaje = document.getElementById('modal-personaje-historico');
   const histArtefacto = document.getElementById('modal-artefacto-historico');
   histPersonaje.innerHTML = '';
@@ -392,24 +354,24 @@ function scrollToBottom() {
 }
 
 function sendMessage() {
-  const input = document.getElementById('user-input');
-  const text = input.value.trim();
-  if (!text) return;
+  const xpSelect = document.getElementById('xp-select');
+  const descInput = document.getElementById('task-desc-input');
+  const xp = parseInt(xpSelect.value, 10);
+  const desc = descInput.value.trim();
+
+  if (!desc) {
+    appendError('Ingresá una descripción para la tarea antes de enviar.');
+    return;
+  }
 
   const emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.remove();
 
-  appendMessage('jugador', text);
-  input.value = '';
+  appendMessage('jugador', '+' + xp + ' por ' + desc);
+  descInput.value = '';
   updateCharCount();
 
-  const resultado = procesarTurno(xpTotalJugador, text);
-
-  if (resultado.error) {
-    appendError(resultado.message);
-    return;
-  }
-
+  const resultado = procesarTarea(xpTotalJugador, xp, desc);
   xpTotalJugador = resultado.xpDespues;
   appendValisTurno(resultado);
   renderState();
@@ -422,21 +384,17 @@ document.getElementById('password-input').addEventListener('keydown', function(e
   }
 });
 
-document.getElementById('user-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
+document.getElementById('task-desc-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
     e.preventDefault();
     sendMessage();
   }
 });
 
-document.getElementById('user-input').addEventListener('input', function() {
-  updateCharCount();
-  this.style.height = 'auto';
-  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-});
+document.getElementById('task-desc-input').addEventListener('input', updateCharCount);
 
 function updateCharCount() {
-  const len = document.getElementById('user-input').value.length;
+  const len = document.getElementById('task-desc-input').value.length;
   document.getElementById('char-count').textContent = len + ' caracteres';
 }
 
