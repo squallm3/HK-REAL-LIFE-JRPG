@@ -151,6 +151,7 @@ function renderState() {
   }
 }
 
+// ── SALTO DIRECTO POR CONTRASEÑA (herramienta de testing) ──
 function probarPassword() {
   const input = document.getElementById('password-input');
   const status = document.getElementById('password-status');
@@ -162,6 +163,16 @@ function probarPassword() {
   if (!match) {
     status.textContent = 'Contraseña incorrecta.';
     status.style.color = 'var(--red-bright)';
+    return;
+  }
+
+  const nivelActual = findLevelByXp(xpTotalJugador);
+
+  if (match.n === nivelActual.n) {
+    status.textContent = 'Ya estás en el Nivel ' + match.n + '.';
+    status.style.color = 'var(--red-bright)';
+    appendError('Estás ingresando la contraseña del nivel en el que ya te encontrás (Nivel ' + match.n + ' — ' + match.t + ').');
+    input.value = '';
     return;
   }
 
