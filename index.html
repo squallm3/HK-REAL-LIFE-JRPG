@@ -199,7 +199,6 @@
     text-align: right;
   }
 
-  /* ── PANEL DE TESTING: CONTRASEÑA ── */
   #password-panel {
     background: var(--dark2);
     border: 2px solid var(--gold-dim);
@@ -578,7 +577,6 @@
 
 <script>
 
-// ── PIXEL STARS ──
 (function() {
   const container = document.getElementById('stars');
   for (let i = 0; i < 60; i++) {
@@ -593,7 +591,6 @@
   }
 })();
 
-// ── AVATARES PIXEL ART (placeholder hasta tener las imágenes reales) ──
 function drawJugadorAvatar(canvas) {
   const ctx = canvas.getContext('2d');
   const S = 10;
@@ -636,8 +633,6 @@ function drawValisAvatar(canvas) {
   ctx.fillRect(S/2, 2*S, 3*S, S/4);
 }
 
-// ── MOTOR: dado un total de XP, devuelve el nivel correspondiente ──
-// (LEVELS viene de niveles.js, cargado antes que este script)
 function findLevelByXp(totalXp) {
   let current = LEVELS[0];
   for (const lvl of LEVELS) {
@@ -717,7 +712,6 @@ function procesarTurno(xpActual, textoInput) {
   };
 }
 
-// ── ESTADO DE LA PARTIDA (sin persistencia todavía — tarea 5) ──
 let xpTotalJugador = 0;
 
 function renderState() {
@@ -756,6 +750,12 @@ function probarPassword() {
   status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
   status.style.color = 'var(--green-magic)';
   input.value = '';
+
+  const emptyState = document.getElementById('empty-state');
+  if (emptyState) emptyState.remove();
+
+  // Muestra el mismo bloque completo que aparecería en el chat al subir de nivel
+  appendLevelUp(match);
 }
 
 document.getElementById('password-input').addEventListener('keydown', function(e) {
