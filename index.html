@@ -199,6 +199,46 @@
     text-align: right;
   }
 
+  /* ── PANEL DE TESTING: CONTRASEÑA ── */
+  #password-panel {
+    background: var(--dark2);
+    border: 2px solid var(--gold-dim);
+    padding: 10px 16px;
+    margin: 8px 0;
+    position: relative;
+  }
+  #password-panel::before {
+    content: '🔑 SALTO POR CONTRASEÑA (TESTING)';
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--dark2);
+    padding: 0 8px;
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .password-row {
+    display: flex;
+    gap: 8px;
+  }
+  #password-input {
+    flex: 1;
+    background: var(--dark);
+    border: 2px solid var(--gold-dim);
+    color: var(--text-body);
+    padding: 8px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    outline: none;
+  }
+  #password-input:focus { border-color: var(--gold); }
+  #password-status {
+    font-size: 11px;
+    margin-top: 6px;
+    letter-spacing: 1px;
+  }
+
   #chat-window {
     flex: 1;
     background: var(--dark2);
@@ -496,6 +536,14 @@
     <div id="xp-bar-label"></div>
   </div>
 
+  <div id="password-panel">
+    <div class="password-row">
+      <input type="text" id="password-input" placeholder="Contraseña de un nivel..." />
+      <button class="send-btn" id="password-btn" onclick="probarPassword()" title="Ingresar">🔑</button>
+    </div>
+    <div id="password-status"></div>
+  </div>
+
   <div class="rune-line"></div>
 
   <div id="chat-window" class="pixel-border">
@@ -572,24 +620,18 @@ function drawValisAvatar(canvas) {
   const S = 10;
   canvas.width = 4 * S;
   canvas.height = 4 * S;
-  // orejas
   ctx.fillStyle = '#8a4fc9';
   ctx.fillRect(S/2, 0, S, S/2);
   ctx.fillRect(2*S+S/2, 0, S, S/2);
-  // cabeza
   ctx.fillStyle = '#a873e0';
   ctx.fillRect(S, S/2, 2*S, S+S/2);
-  // hocico
   ctx.fillStyle = '#f5f0ff';
   ctx.fillRect(S+S/4, S+S/2, S+S/2, S);
-  // ojos
   ctx.fillStyle = '#2a1a40';
   ctx.fillRect(S+S/4, S, S/4, S/4);
   ctx.fillRect(2*S+S/2, S, S/4, S/4);
-  // toga/capucha
   ctx.fillStyle = '#601a8f';
   ctx.fillRect(0, 2*S, 4*S, 2*S);
-  // ribete dorado
   ctx.fillStyle = '#c9a84c';
   ctx.fillRect(S/2, 2*S, 3*S, S/4);
 }
@@ -693,6 +735,35 @@ function renderState() {
     document.getElementById('xp-bar-label').textContent = 'Nivel máximo alcanzado';
   }
 }
+
+// ── SALTO DIRECTO POR CONTRASEÑA (herramienta de testing) ──
+function probarPassword() {
+  const input = document.getElementById('password-input');
+  const status = document.getElementById('password-status');
+  const texto = input.value.trim();
+  if (!texto) return;
+
+  const match = LEVELS.find(l => l.pw.toLowerCase() === texto.toLowerCase());
+
+  if (!match) {
+    status.textContent = 'Contraseña incorrecta.';
+    status.style.color = 'var(--red-bright)';
+    return;
+  }
+
+  xpTotalJugador = match.xp;
+  renderState();
+  status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
+  status.style.color = 'var(--green-magic)';
+  input.value = '';
+}
+
+document.getElementById('password-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    probarPassword();
+  }
+});
 
 function appendMessage(role, text) {
   const container = document.getElementById('messages');
