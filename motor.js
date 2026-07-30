@@ -98,6 +98,30 @@ function procesarTarea(xpActual, xpGanada, descripcion) {
 
 let xpTotalJugador = 0;
 
+// ── PERSISTENCIA (localStorage) ──
+const STORAGE_KEY = 'odisea_haikus_gnosticos_save';
+
+function guardarPartida() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ xp: xpTotalJugador }));
+  } catch (e) {
+    console.error('No se pudo guardar la partida:', e);
+  }
+}
+
+function cargarPartida() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (typeof data.xp === 'number' && data.xp >= 0) {
+      xpTotalJugador = data.xp;
+    }
+  } catch (e) {
+    console.error('No se pudo cargar la partida:', e);
+  }
+}
+
 function renderState() {
   const nivel = findLevelByXp(xpTotalJugador);
   const sig = nextLevel(nivel.n);
@@ -243,6 +267,7 @@ function probarPassword() {
 
   xpTotalJugador = match.xp;
   renderState();
+  guardarPartida();
   status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
   status.style.color = 'var(--green-magic)';
   input.value = '';
@@ -370,6 +395,7 @@ function sendMessage() {
   xpTotalJugador = resultado.xpDespues;
   appendValisTurno(resultado);
   renderState();
+  guardarPartida();
 }
 
 document.getElementById('password-input').addEventListener('keydown', function(e) {
@@ -393,4 +419,5 @@ function updateCharCount() {
   document.getElementById('char-count').textContent = len + ' caracteres';
 }
 
+cargarPartida();
 renderState();

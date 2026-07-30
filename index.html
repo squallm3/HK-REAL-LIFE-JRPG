@@ -56,16 +56,23 @@
 
   <div id="input-area">
     <div class="input-row">
-      <textarea
-        id="user-input"
-        placeholder="+50 por lavar los platos (Enter para enviar)"
-        rows="1"
-      ></textarea>
+      <select id="xp-select">
+        <option value="111">+111</option>
+        <option value="333">+333</option>
+        <option value="777">+777</option>
+        <option value="1111">+1111</option>
+        <option value="2222">+2222</option>
+      </select>
+      <input
+        type="text"
+        id="task-desc-input"
+        placeholder="Descripción de la tarea (opcional, Enter para enviar)"
+      />
       <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Enviar">⚔</button>
     </div>
     <div id="controls">
       <span id="char-count">0 caracteres</span>
-      <span style="color:var(--text-dim);font-size:10px;letter-spacing:1px;">ENTER = ENVIAR &bull; SHIFT+ENTER = NUEVA LÍNEA</span>
+      <span style="color:var(--text-dim);font-size:10px;letter-spacing:1px;">ENTER = ENVIAR</span>
     </div>
   </div>
 
@@ -98,7 +105,6 @@
 </div>
 
 <script src="fragmentos.js"></script>
-
 <script src="motor.js"></script>
 </body>
 </html>
