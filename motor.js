@@ -357,12 +357,7 @@ function sendMessage() {
   const xpSelect = document.getElementById('xp-select');
   const descInput = document.getElementById('task-desc-input');
   const xp = parseInt(xpSelect.value, 10);
-  const desc = descInput.value.trim();
-
-  if (!desc) {
-    appendError('Ingresá una descripción para la tarea antes de enviar.');
-    return;
-  }
+  const desc = descInput.value.trim() || 'Tarea';
 
   const emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.remove();
