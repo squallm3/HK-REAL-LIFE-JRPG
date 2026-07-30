@@ -1,0 +1,7 @@
+services:
+  hk-real-life-jrpg:
+    build: .
+    container_name: hk-real-life-jrpg
+    restart: unless-stopped
+    ports:
+      - "8112:80"
