@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Odisea de los Haikus Gnósticos</title>
+<script src="niveles.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
 
@@ -145,7 +146,6 @@
     margin-top: 4px;
   }
 
-  /* ── PANEL DE ESTADO DEL JUGADOR ── */
   #state-panel {
     background: var(--dark2);
     border: 2px solid var(--gold-dim);
@@ -199,7 +199,6 @@
     text-align: right;
   }
 
-  /* ── CHAT WINDOW ── */
   #chat-window {
     flex: 1;
     background: var(--dark2);
@@ -318,7 +317,6 @@
     50% { opacity: 1; transform: scale(1.3); }
   }
 
-  /* ── BLOQUE DE ASCENSIÓN ── */
   .levelup-block {
     background: linear-gradient(135deg, #0a2a1a 0%, var(--dark3) 100%);
     border: 2px solid var(--green-dim);
@@ -343,7 +341,6 @@
   .levelup-row span:first-child { color: var(--text-dim); }
   .levelup-row .pw { color: var(--gold-bright); font-family: monospace; }
 
-  /* ── ERROR INLINE ── */
   .error-block {
     background: linear-gradient(135deg, #2a0a0a 0%, var(--dark3) 100%);
     border: 2px solid var(--red);
@@ -354,7 +351,6 @@
     font-size: 12px;
   }
 
-  /* ── INPUT AREA ── */
   #input-area {
     background: var(--dark2);
     border: 2px solid var(--gold-dim);
@@ -490,7 +486,6 @@
 
   <div class="rune-line"></div>
 
-  <!-- ESTADO DEL JUGADOR -->
   <div id="state-panel">
     <div id="state-row">
       <span id="state-level">Nivel 1</span>
@@ -498,12 +493,11 @@
     </div>
     <div id="state-title">Iniciado de la Grieta</div>
     <div id="xp-bar-track"><div id="xp-bar-fill" style="width:0%"></div></div>
-    <div id="xp-bar-label" id="xp-bar-label"></div>
+    <div id="xp-bar-label"></div>
   </div>
 
   <div class="rune-line"></div>
 
-  <!-- CHAT WINDOW -->
   <div id="chat-window" class="pixel-border">
     <div id="messages">
       <div id="empty-state">
@@ -516,7 +510,6 @@
     </div>
   </div>
 
-  <!-- INPUT -->
   <div id="input-area">
     <div class="input-row">
       <textarea
@@ -552,7 +545,7 @@
   }
 })();
 
-// ── AVATARES PIXEL ART GENÉRICOS (placeholder hasta tener las imágenes reales de VALIS) ──
+// ── AVATARES PIXEL ART (placeholder hasta tener las imágenes reales) ──
 function drawJugadorAvatar(canvas) {
   const ctx = canvas.getContext('2d');
   const S = 10;
@@ -579,126 +572,30 @@ function drawValisAvatar(canvas) {
   const S = 10;
   canvas.width = 4 * S;
   canvas.height = 4 * S;
-  ctx.fillStyle = '#601040';
-  ctx.fillRect(S/2, 0, 3*S, S/2);
-  ctx.fillStyle = '#e0a878';
+  // orejas
+  ctx.fillStyle = '#8a4fc9';
+  ctx.fillRect(S/2, 0, S, S/2);
+  ctx.fillRect(2*S+S/2, 0, S, S/2);
+  // cabeza
+  ctx.fillStyle = '#a873e0';
   ctx.fillRect(S, S/2, 2*S, S+S/2);
-  ctx.fillStyle = '#2aaa60';
-  ctx.fillRect(S+S/4, S, S/3, S/3);
-  ctx.fillRect(2*S+S/6, S, S/3, S/3);
-  ctx.fillStyle = '#601040';
+  // hocico
+  ctx.fillStyle = '#f5f0ff';
+  ctx.fillRect(S+S/4, S+S/2, S+S/2, S);
+  // ojos
+  ctx.fillStyle = '#2a1a40';
+  ctx.fillRect(S+S/4, S, S/4, S/4);
+  ctx.fillRect(2*S+S/2, S, S/4, S/4);
+  // toga/capucha
+  ctx.fillStyle = '#601a8f';
   ctx.fillRect(0, 2*S, 4*S, 2*S);
-  ctx.fillStyle = '#c04090';
-  ctx.fillRect(0, 2*S, S/2, S/2);
-  ctx.fillRect(3*S+S/2, 2*S, S/2, S/2);
+  // ribete dorado
   ctx.fillStyle = '#c9a84c';
   ctx.fillRect(S/2, 2*S, 3*S, S/4);
 }
 
-// ── TABLA DE 100 NIVELES (fuente de verdad, hardcodeada) ──
-const LEVELS = [
-  {n:1,   t:"Iniciado de la Grieta",                         xp:0,       art:"Diario de la Grieta Menor",              pw:"Gnosis"},
-  {n:2,   t:"Aprendiz de la Sizigia",                         xp:14,      art:"Orbe de Alineación",                     pw:"Choripan"},
-  {n:3,   t:"Escudero de Mahoraga",                           xp:78,      art:"Rueda de Adaptación Fragmentada",        pw:"LCL"},
-  {n:4,   t:"Rastreador de la Gnosis",                        xp:215,     art:"Brújula del Pleroma",                    pw:"Arconte"},
-  {n:5,   t:"Working Class Hero",                             xp:439,     art:"Martillo del Proletariado",              pw:"Manaos"},
-  {n:6,   t:"Navegante del LCL",                               xp:762,     art:"Cápsula de Entry Plug",                  pw:"Pleroma"},
-  {n:7,   t:"Hechicero de Grado Especial",                    xp:1195,    art:"Talismán Maldito de Rika",               pw:"Lilith"},
-  {n:8,   t:"Operador de Valis",                              xp:1746,    art:"Láser de Información Rosa",              pw:"Bondi"},
-  {n:9,   t:"Portador del Cristal de Plata",                  xp:2424,    art:"Broche de Transformación Lunar",         pw:"Demiurgo"},
-  {n:10,  t:"Sintonizador de Midgar",                         xp:3236,    art:"Materia Verde Básica",                   pw:"Sincro"},
-  {n:11,  t:"Maestro del Octavo Sentido",                     xp:4189,    art:"Armadura de Bronce",                     pw:"Quilombo"},
-  {n:12,  t:"Alquimista de Amestris",                         xp:5291,    art:"Reloj de Bolsillo Estatal",              pw:"Nerv"},
-  {n:13,  t:"Caminante del Rayo Rosa",                        xp:6548,    art:"Gafas de Philip K. Dick",                pw:"Sofia"},
-  {n:14,  t:"Cazador de la Cacería Salvaje",                  xp:7968,    art:"Medallón de la Cacería",                 pw:"Chamuyo"},
-  {n:15,  t:"Soberano del Trono de Hierro",                   xp:9557,    art:"Espada de Acero Valyrio",                pw:"Eon"},
-  {n:16,  t:"Invocador de G.F. (FF8)",                        xp:11322,   art:"Anillo del Rey Sincorazón",              pw:"Bersek"},
-  {n:17,  t:"Pilar de la Niebla",                              xp:13271,   art:"Nichirin de la Niebla",                  pw:"Coto"},
-  {n:18,  t:"Arquitecto de Aperture Science",                 xp:15409,   art:"Pistola de Portales Básica",             pw:"Abraxas"},
-  {n:19,  t:"Caballero de la Orden Assassins",                xp:17743,   art:"Hoja Oculta Estándar",                   pw:"Morfi"},
-  {n:20,  t:"Derrumbador de Murallas (AoT)",                  xp:20281,   art:"Cuchillas de Equipo de Maniobras",       pw:"Shinji"},
-  {n:21,  t:"Agente del Freeman",                             xp:23028,   art:"Palanca Ensangrentada",                  pw:"Kenoma"},
-  {n:22,  t:"Portador de la Death Note",                      xp:25992,   art:"Fragmento de Hoja de Cuaderno Oscuro",   pw:"Fernet"},
-  {n:23,  t:"Maestro de la Gnosis de Arrakis",                xp:29177,   art:"Anillo del Duque Leto",                  pw:"Asuka"},
-  {n:24,  t:"Viajero de la Escotilla (Lost)",                 xp:32591,   art:"Llave Magnética de la Iniciativa Dharma",pw:"Monada"},
-  {n:25,  t:"Samurai de Tokyo Revengers",                     xp:36240,   art:"Chaqueta de la Tokyo Manji",             pw:"Laburo"},
-  {n:26,  t:"Androide de YoRHa",                              xp:40129,   art:"Espada Contrato Blanco",                 pw:"Sachiel"},
-  {n:27,  t:"Brujo de la Escuela del Lobo",                   xp:44265,   art:"Medallón de Lobo de Plata",              pw:"Chispa"},
-  {n:28,  t:"Guardián del Arcano (HP)",                       xp:48655,   art:"Varita de Saúco Quebrada",               pw:"Gilda"},
-  {n:29,  t:"Expedicionario del Dark Side",                   xp:53305,   art:"Sable de Luz Carmesí Menor",             pw:"Ramiel"},
-  {n:30,  t:"Jubilado del Cosmos",                            xp:58221,   art:"Mate Infinito del Cosmos",               pw:"Truco"},
-  {n:31,  t:"Operador de Enlace Quiral",                      xp:63410,   art:"Dispositivo Q-pid",                      pw:"Metatron"},
-  {n:32,  t:"El Honorable de los Seis Ojos",                  xp:68878,   art:"Gafas de Sol de Satoru",                 pw:"Alfajor"},
-  {n:33,  t:"Arquitecto de la Gnosis",                        xp:74632,   art:"Pluma del Demiurgo",                     pw:"Misato"},
-  {n:34,  t:"Navegante del Caos",                              xp:80678,   art:"Caja de Lemarchand",                     pw:"Mate"},
-  {n:35,  t:"Transmutador de Destinos",                       xp:87023,   art:"Círculo de Transmutación Portátil",      pw:"Yaldabaoth"},
-  {n:36,  t:"Consultor del I-Ching Digital",                  xp:100000,  art:"Monedas de Cobre Cuánticas",             pw:"Otaku"},
-  {n:37,  t:"Arquetipo de la Sombra (Jung)",                  xp:107314,  art:"Espejo del Inconsciente",                pw:"Impacto"},
-  {n:38,  t:"Buda del Séptimo Vacío",                         xp:114904,  art:"Loto de los Siete Pétalos",              pw:"Gualicho"},
-  {n:39,  t:"Shinobi de la Respiración Solar",                xp:122776,  art:"Nichirin Solar Brillante",               pw:"Rei"},
-  {n:40,  t:"Arquitecto de la sincronicidad",                 xp:130935,  art:"Reloj de la Sincronicidad",              pw:"Subte"},
-  {n:41,  t:"Piloto de la Unidad 01",                         xp:139385,  art:"Lanza de Longinus (Réplica)",            pw:"Archon"},
-  {n:42,  t:"Maestro de la Brújula Dorada",                   xp:148131,  art:"Aletiómetro de Oro",                     pw:"Sacoa"},
-  {n:43,  t:"Soldado de Primera Clase (FF7)",                 xp:157176,  art:"Espada Mortal (Buster Sword)",           pw:"Kaworu"},
-  {n:44,  t:"Elegido del Rayo Rosa Supremo",                  xp:166395,  art:"Proyector de Rayo Rosa",                 pw:"Despertar"},
-  {n:45,  t:"Squall y su expansión territorial",              xp:176184,  art:"Sigilio rojo de las artes kaóticas",     pw:"Barbelo"},
-  {n:46,  t:"Hechicero de la Expansión Territorial",          xp:186154,  art:"Dominio Celular (Dedo de Sukuna)",       pw:"Salamin"},
-  {n:47,  t:"Investigador de Raccoon City",                   xp:196439,  art:"Hierba Verde Mezclada",                  pw:"Penpen"},
-  {n:48,  t:"Velocista del Anillo de Sonic",                  xp:207044,  art:"Anillo Dorado de Movimiento",            pw:"Sefirot"},
-  {n:49,  t:"Cazador de Shinigamis",                          xp:217972,  art:"Zanpakutō Despertada",                   pw:"Tang"},
-  {n:50,  t:"Héroe de un Solo Puñetazo",                      xp:229227,  art:"Guantes de Ejercicio Rotos",              pw:"Bolonqui"},
-  {n:51,  t:"Mago del Ministerio del Caos",                   xp:240811,  art:"Vara del Caos",                          pw:"Merluza"},
-  {n:52,  t:"Usuario de la Piedra Filosofal",                 xp:252729,  art:"Fragmento de Piedra Filosofal",          pw:"Birra"},
-  {n:53,  t:"Observador de la Realidad Ubik",                 xp:264984,  art:"Aerosol Ubik",                           pw:"Leliel"},
-  {n:54,  t:"Inquisidor de Novigrad",                         xp:277579,  art:"Medallón de Fuego de Igni",              pw:"Fachero"},
-  {n:55,  t:"Arquitecto del Laberinto de Alan Wake",          xp:290518,  art:"Página del Manuscrito Modificada",       pw:"Zeruel"},
-  {n:56,  t:"Viajero del Agujero de Gusano",                  xp:303803,  art:"Cristal de Agujero de Gusano",           pw:"Mandanga"},
-  {n:57,  t:"Mutante del Nivel Omega (Marvel)",                xp:317438,  art:"Gen X Mutado",                           pw:"Carpincho"},
-  {n:58,  t:"Protector de Gotham",                            xp:331427,  art:"Batarang de Carbono",                    pw:"Israfel"},
-  {n:59,  t:"Maestro del Wonderboy",                          xp:345772,  art:"Gorra de Wonderboy",                     pw:"Atorrante"},
-  {n:60,  t:"Psíquico del Porcentaje 100",                    xp:360476,  art:"Cuchara Doblada por la Mente",           pw:"Sandalphon"},
-  {n:61,  t:"Líder de la Toman",                              xp:375543,  art:"Bandera de la Primera Generación",       pw:"Mistica"},
-  {n:62,  t:"Alquimista de la Puerta de la Verdad",           xp:390975,  art:"La Puerta de la Verdad en Miniatura",    pw:"Gato"},
-  {n:63,  t:"Operador de la Cuchilla Oculta",                 xp:406775,  art:"Guantelete del Asesino Maestro",         pw:"Matriz"},
-  {n:64,  t:"Dragón de Namek",                                xp:422946,  art:"Esfera del Dragón de 4 Estrellas",       pw:"Monono"},
-  {n:65,  t:"Maestro del Kaio-Ken",                           xp:439492,  art:"Aura Roja del Kaio-Ken",                 pw:"Bardero"},
-  {n:66,  t:"Sexto Ojo del Infinito",                         xp:456414,  art:"Venda de los Seis Ojos",                 pw:"Sophia"},
-  {n:67,  t:"Portador de Excalibur",                          xp:473715,  art:"Vaina de Avalon",                        pw:"Fulbo"},
-  {n:68,  t:"Cazador de Demonios de Clase S",                 xp:491398,  art:"Espada Kurikara",                        pw:"Bardiel"},
-  {n:69,  t:"Maestro de la Brújula de Dick",                  xp:509466,  art:"Radio Interdimensional de Dick",         pw:"Guita"},
-  {n:70,  t:"Elegido de la Sizigia Solar",                    xp:527920,  art:"Disco Solar de la Sizigia",              pw:"Sahaquiel"},
-  {n:71,  t:"Comandante del Reconocimiento",                  xp:546765,  art:"Capa de la Legión de Reconocimiento",    pw:"Armisael"},
-  {n:72,  t:"Archivista del Pleroma",                          xp:565995,  art:"Códice de Nag Hammadi",                  pw:"Tabris"},
-  {n:73,  t:"Maestro de la Magia de Sigilos",                 xp:585614,  art:"Tiza de Sigilos Infinitos",              pw:"Peronismo"},
-  {n:74,  t:"Guardián de la Heladera de Acero",               xp:605625,  art:"Llave de la Heladera de Acero",          pw:"Entropia"},
-  {n:75,  t:"Héroe del LCL Rojo",                             xp:626029,  art:"Mar de LCL Concentrado",                 pw:"Chorizo"},
-  {n:76,  t:"Viajero de la Playa (DS2)",                      xp:646830,  art:"Reloj de Bolsillo de Fragile",           pw:"Anunnaki"},
-  {n:77,  t:"Operador del Odradek Dorado",                    xp:668028,  art:"Odradek de Oro Macizo",                  pw:"Diego"},
-  {n:78,  t:"Maestro de la Quintaesencia",                    xp:689626,  art:"Cristal de Quintaesencia Pura",          pw:"Mesias"},
-  {n:79,  t:"Guerrero de la Armadura Divina",                 xp:711627,  art:"Armadura Escama Divina",                 pw:"Patagon"},
-  {n:80,  t:"Sumo Sacerdote de Hello Kitty",                  xp:734033,  art:"Peluche Dimensional de Hello Kitty",     pw:"Gauchito"},
-  {n:81,  t:"Maestro del Arte de Perder el Control",          xp:756845,  art:"Brazalete del Club de la Pelea",         pw:"Obelisco"},
-  {n:82,  t:"Sintonizador de la Radio de Silent Hill",        xp:780066,  art:"Radio Estática de Niebla",               pw:"Destino"},
-  {n:83,  t:"Hacker del Kernel de Matrix",                    xp:803698,  art:"Disco Flexible de Zion",                 pw:"Victoria"},
-  {n:84,  t:"Viajero de los 108 Caminos",                     xp:827743,  art:"Pergamino de los 108 Destinos",          pw:"Astral"},
-  {n:85,  t:"Maestro del I-Ching Cuántico",                   xp:852202,  art:"Monedas de I-Ching Holográficas",        pw:"Gil"},
-  {n:86,  t:"Cazador de la Luz Despertada",                   xp:877078,  art:"Orbe de Luz Despertada",                 pw:"Conurbano"},
-  {n:87,  t:"Operador de la Máquina de Alan Wake",            xp:902373,  art:"Máquina de Escribir Antigüa",            pw:"Cuarteto"},
-  {n:88,  t:"Soberano de la Gnosis Eterna",                   xp:928088,  art:"Corona del Pleroma",                     pw:"Milanesa"},
-  {n:89,  t:"Maestro de la Sizigia Infinita",                 xp:954225,  art:"Prisma de la Sizigia",                   pw:"Logos"},
-  {n:90,  t:"Héroe de la Clase Obrera Galáctica",             xp:980786,  art:"Hoz y Martillo Estelares",               pw:"Monolito"},
-  {n:91,  t:"Guardián del Umbral de Dick",                    xp:1007773, art:"Ojo Omnisciente de VALIS",               pw:"Reclamo"},
-  {n:92,  t:"Alquimista del Sol de Amestris",                 xp:1035188, art:"Sol Embotellado de Xerxes",              pw:"Burocracia"},
-  {n:93,  t:"Maestro del Vacío de Krishnamurti",              xp:1063032, art:"Campana del Vacío de Jiddu",             pw:"Afip"},
-  {n:94,  t:"Operador del Sistema de Destino",                xp:1091307, art:"Matriz del Destino Programable",         pw:"Vacio"},
-  {n:95,  t:"Cazador de la Pesadilla de Yharnam",             xp:1120218, art:"Campana Diminuta del Cazador",           pw:"Yharnam"},
-  {n:96,  t:"Arquitecto de la Nueva Arrakis",                 xp:1149129, art:"Gusano de Arena Cristalizado",           pw:"Albedrio"},
-  {n:97,  t:"Señor del Tiempo de la Grieta",                  xp:1178696, art:"Cronómetro de la Grieta",                pw:"Karma"},
-  {n:98,  t:"Maestro de la Ilusión de la Verdad",             xp:1208702, art:"Espejo de las Mil Verdades",             pw:"Chorro"},
-  {n:99,  t:"Portador de la Realidad Permite",                xp:1239148, art:"Controlador de la Realidad",             pw:"Apocalipsis"},
-  {n:100, t:"Avatar de la Gnosis de Todo",                    xp:1359049, art:"Aleph del Todo",                         pw:"Instrumentalidad"}
-];
-
+// ── MOTOR: dado un total de XP, devuelve el nivel correspondiente ──
+// (LEVELS viene de niveles.js, cargado antes que este script)
 function findLevelByXp(totalXp) {
   let current = LEVELS[0];
   for (const lvl of LEVELS) {
@@ -781,7 +678,6 @@ function procesarTurno(xpActual, textoInput) {
 // ── ESTADO DE LA PARTIDA (sin persistencia todavía — tarea 5) ──
 let xpTotalJugador = 0;
 
-// ── RENDER DEL PANEL DE ESTADO ──
 function renderState() {
   const nivel = findLevelByXp(xpTotalJugador);
   const sig = nextLevel(nivel.n);
@@ -798,7 +694,6 @@ function renderState() {
   }
 }
 
-// ── RENDER DE MENSAJES ──
 function appendMessage(role, text) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
@@ -899,7 +794,6 @@ function scrollToBottom() {
   m.scrollTop = m.scrollHeight;
 }
 
-// ── ENVÍO DE MENSAJE ──
 function sendMessage() {
   const input = document.getElementById('user-input');
   const text = input.value.trim();
@@ -924,7 +818,6 @@ function sendMessage() {
   renderState();
 }
 
-// ── INPUT HANDLING ──
 document.getElementById('user-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
@@ -943,7 +836,6 @@ function updateCharCount() {
   document.getElementById('char-count').textContent = len + ' caracteres';
 }
 
-// ── INIT ──
 renderState();
 
 </script>
