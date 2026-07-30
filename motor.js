@@ -151,7 +151,67 @@ function renderState() {
   }
 }
 
-// ── SALTO DIRECTO POR CONTRASEÑA (herramienta de testing) ──
+// ── IMÁGENES (formato 4:5, se ignoran silenciosamente si no existen todavía) ──
+function imgNivel(n) { return 'assets/niveles/' + n + '-nivel.png'; }
+function imgArtefacto(n) { return 'assets/niveles/' + n + '-artefacto.png'; }
+
+// ── MODAL DE ESTADO / INVENTARIO ──
+function abrirModalEstado() {
+  renderModalEstado();
+  document.getElementById('estado-modal-overlay').classList.remove('hidden');
+}
+
+function cerrarModalEstado() {
+  document.getElementById('estado-modal-overlay').classList.add('hidden');
+}
+
+function cerrarModalEstadoOverlay(e) {
+  if (e.target.id === 'estado-modal-overlay') cerrarModalEstado();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') cerrarModalEstado();
+});
+
+function renderModalEstado() {
+  const nivel = findLevelByXp(xpTotalJugador);
+
+  const actual = document.getElementById('modal-nivel-actual');
+  actual.innerHTML = `
+    <div class="modal-nivel-header">
+      <div class="modal-img-box"><img src="${imgNivel(nivel.n)}" alt="Nivel ${nivel.n}" onerror="this.parentElement.style.display='none'"></div>
+      <div>
+        <p style="font-size:11px; color:var(--gold-dim); margin:0 0 2px;">Nivel ${nivel.n}</p>
+        <p style="font-size:15px; color:var(--gold-bright); margin:0;">${nivel.t}</p>
+      </div>
+    </div>
+    <div class="modal-artefacto-row">
+      <div class="modal-img-box"><img src="${imgArtefacto(nivel.n)}" alt="${nivel.art}" onerror="this.parentElement.style.display='none'"></div>
+      <div>
+        <p style="font-size:13px; color:var(--gold-bright); margin:0 0 4px;">${nivel.art}</p>
+        <p class="modal-desc">${nivel.desc}</p>
+      </div>
+    </div>
+  `;
+
+  const lista = document.getElementById('modal-inventario-lista');
+  lista.innerHTML = '';
+  for (let n = nivel.n - 1; n >= 1; n--) {
+    const lvl = LEVELS.find(l => l.n === n);
+    if (!lvl) continue;
+    const item = document.createElement('div');
+    item.className = 'inventario-item';
+    item.innerHTML = `
+      <img src="${imgArtefacto(lvl.n)}" alt="${lvl.art}" onerror="this.style.display='none'">
+      <div>
+        <p class="inv-nombre">${lvl.art}</p>
+        <p class="inv-nivel">Nivel ${lvl.n} — ${lvl.t}</p>
+      </div>
+    `;
+    lista.appendChild(item);
+  }
+}
+
 function probarPassword() {
   const input = document.getElementById('password-input');
   const status = document.getElementById('password-status');

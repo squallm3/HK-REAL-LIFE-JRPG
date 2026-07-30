@@ -22,7 +22,7 @@
 
   <div class="rune-line"></div>
 
-  <div id="state-panel">
+  <div id="state-panel" role="button" tabindex="0" onclick="abrirModalEstado()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirModalEstado();}">
     <div id="state-row">
       <span id="state-level">Nivel 1</span>
       <span id="state-xp">0 XP</span>
@@ -70,6 +70,16 @@
   </div>
 
   <footer>La Odisea de los Haikus Gnósticos &mdash; 100% offline</footer>
+</div>
+
+<div id="estado-modal-overlay" class="modal-overlay hidden" onclick="cerrarModalEstadoOverlay(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="cerrarModalEstado()" aria-label="Cerrar">✕</button>
+    <div id="modal-nivel-actual"></div>
+    <div class="modal-divider"></div>
+    <p class="modal-section-label">⚜ Artefactos anteriores</p>
+    <div id="modal-inventario-lista"></div>
+  </div>
 </div>
 
 <script src="motor.js"></script>
