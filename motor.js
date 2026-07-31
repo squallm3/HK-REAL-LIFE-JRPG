@@ -108,7 +108,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const BACKEND_URL = 'http://192.168.1.133:3001';
+const BACKEND_URL = (window.location.hostname === 'hkjrpg.duckdns.org') ? '' : 'http://192.168.1.133:3001';
 
 let usandoBackend = false;
 
