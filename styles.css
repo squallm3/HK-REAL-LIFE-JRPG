@@ -116,13 +116,10 @@ h1 {
 
 #state-panel {
   background: var(--dark2); border: 2px solid var(--gold-dim); padding: 14px 16px; margin: 8px 0;
-  position: relative; cursor: pointer; transition: border-color 0.15s, background 0.15s;
-  display: block; width: 100%; text-align: left; font-family: inherit; color: inherit;
+  position: relative;
 }
-#state-panel:hover { border-color: var(--gold); background: var(--dark3); }
-#state-panel:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
 #state-panel::before {
-  content: '⚜ 🦊 ESTADO DE LA PARTIDA (tocá para ver detalle)';
+  content: '⚜ 🦊 ESTADO DE LA PARTIDA';
   position: absolute; top: -10px; left: 16px;
   background: var(--dark2); padding: 0 8px; color: var(--gold);
   font-size: 10px; letter-spacing: 2px;
@@ -132,6 +129,15 @@ h1 {
 #xp-bar-track { height: 8px; background: var(--dark); border: 1px solid var(--gold-dim); position: relative; overflow: hidden; }
 #xp-bar-fill { height: 100%; background: var(--green-magic); box-shadow: 0 0 8px var(--green-magic); transition: width 0.4s ease-out; }
 #xp-bar-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; text-align: right; }
+
+.detalles-link {
+  display: inline-block; margin-top: 8px; font-size: 11px; color: var(--gold-bright);
+  text-decoration: underline; cursor: pointer;
+}
+.detalles-link:hover { color: var(--gold); }
+
+.levelup-parrafo { font-size: 13px; color: var(--text-body); line-height: 1.6; margin-bottom: 4px; }
+.levelup-parrafo strong { color: var(--gold-bright); }
 
 #password-panel { background: var(--dark2); border: 2px solid var(--gold-dim); padding: 10px 16px; margin: 8px 0; position: relative; }
 #password-panel::before {

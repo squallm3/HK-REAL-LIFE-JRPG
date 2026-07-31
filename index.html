@@ -26,7 +26,7 @@
 
   <div class="rune-line"></div>
 
-  <div id="state-panel" role="button" tabindex="0" onclick="abrirModalEstado()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirModalEstado();}">
+  <div id="state-panel">
     <div id="state-row">
       <span id="state-level">Nivel 1</span>
       <span id="state-xp">0 XP</span>
@@ -34,6 +34,7 @@
     <div id="state-title">Iniciado de la Grieta</div>
     <div id="xp-bar-track"><div id="xp-bar-fill" style="width:0%"></div></div>
     <div id="xp-bar-label"></div>
+    <a href="#" class="detalles-link" onclick="abrirModalEstado(); return false;">Click para más detalles</a>
   </div>
 
   <div id="save-panel">

@@ -473,7 +473,8 @@ function appendValisTurno(resultado) {
 
   const fragmento = document.createElement('div');
   fragmento.className = 'fragmento-text';
-  fragmento.textContent = FRAGMENTOS[resultado.nivelDespues.n] || '';
+  const frasesNivel = FRAGMENTOS[resultado.nivelDespues.n];
+  fragmento.textContent = frasesNivel ? frasesNivel[Math.floor(Math.random() * frasesNivel.length)] : '';
   inner.appendChild(fragmento);
 
   bubbleDiv.appendChild(name);
@@ -497,9 +498,10 @@ function appendLevelUp(lvl) {
   div.className = 'levelup-block';
   div.innerHTML = `
     <div class="levelup-header">⚜ Ascensión — Nivel ${lvl.n}</div>
-    <div class="levelup-row"><span>Título</span><span>${lvl.t}</span></div>
-    <div class="levelup-row"><span>Artefacto</span><span>${lvl.art}</span></div>
-    <div class="levelup-row"><span>Contraseña</span><span class="pw">${lvl.pw}</span></div>
+    <p class="levelup-parrafo">
+      ¡Ascendiste al Nivel ${lvl.n}! Ahora sos <strong>${lvl.t}</strong>, portador de <strong>${lvl.art}</strong>.
+    </p>
+    <a href="#" class="detalles-link" onclick="abrirModalEstado(); return false;">Click aquí para más detalles</a>
   `;
   container.appendChild(div);
   scrollToBottom();
