@@ -581,11 +581,16 @@ function appendLevelUp(lvl) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'levelup-block';
+  const siguiente = nextLevel(lvl.n);
+  const faltanteTexto = siguiente
+    ? 'Te faltan <strong>' + (siguiente.xp - lvl.xp).toLocaleString('es-AR') + ' XP</strong> para el Nivel ' + siguiente.n + '.'
+    : 'Alcanzaste el nivel máximo.';
   div.innerHTML = `
     <div class="levelup-header">⚜ Ascensión — Nivel ${lvl.n}</div>
     <p class="levelup-parrafo">
       ¡Ascendiste al Nivel ${lvl.n}! Ahora sos <strong>${lvl.t}</strong>, portador de <strong>${lvl.art}</strong>.
     </p>
+    <p class="levelup-parrafo">${faltanteTexto}</p>
     <a href="#" class="detalles-link" onclick="abrirModalEstado(); return false;">Click aquí para más detalles</a>
   `;
   container.appendChild(div);
