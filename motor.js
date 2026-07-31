@@ -328,11 +328,28 @@ function eliminarTareaDelDia(idx) {
     console.error('No se pudo actualizar el resumen del día:', e);
   }
 
+  const nivelAntes = findLevelByXp(xpTotalJugador).n;
   xpTotalJugador = Math.max(0, xpTotalJugador - tarea.xp);
+  const nivelDespues = findLevelByXp(xpTotalJugador).n;
+
   renderState();
   guardarPartida();
   guardarPersonajeBackend();
+
+  if (nivelDespues < nivelAntes) {
+    appendBajadaNivel(nivelAntes, nivelDespues);
+  }
+
   abrirResumenDia();
+}
+
+function appendBajadaNivel(nivelAntes, nivelDespues) {
+  const container = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'aviso-block';
+  div.textContent = 'Bajaste del Nivel ' + nivelAntes + ' al Nivel ' + nivelDespues + ' al eliminar una tarea del resumen del día.';
+  container.appendChild(div);
+  scrollToBottom();
 }
 
 function cerrarResumenDia() {
