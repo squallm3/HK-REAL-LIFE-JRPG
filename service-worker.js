@@ -1,4 +1,4 @@
-const CACHE_NAME = 'odisea-haikus-v1';
+const CACHE_NAME = 'odisea-haikus-v2';
 const FILES_TO_CACHE = [
   './',
   'index.html',
@@ -28,8 +28,20 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Network-first: siempre intenta traer la version mas nueva primero.
+// Si no hay conexion, recien ahi usa lo que tenga cacheado.
+// Las peticiones que no son GET (como el PUT al backend) pasan directo, sin cachear.
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
