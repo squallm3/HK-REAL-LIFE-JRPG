@@ -1,0 +1,25 @@
+{
+  "name": "La Odisea de los Haikus Gnósticos",
+  "short_name": "Haikus Gnósticos",
+  "description": "Registro de tareas gamificado con VALIS",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0806",
+  "theme_color": "#c9a84c",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

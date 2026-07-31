@@ -6,6 +6,8 @@ COPY motor.js /usr/share/nginx/html/motor.js
 COPY niveles.js /usr/share/nginx/html/niveles.js
 COPY fragmentos.js /usr/share/nginx/html/fragmentos.js
 COPY favicon.ico /usr/share/nginx/html/favicon.ico
+COPY manifest.json /usr/share/nginx/html/manifest.json
+COPY service-worker.js /usr/share/nginx/html/service-worker.js
 COPY assets/ /usr/share/nginx/html/assets/
 
 EXPOSE 80
