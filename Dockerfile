@@ -5,6 +5,7 @@ COPY styles.css /usr/share/nginx/html/styles.css
 COPY motor.js /usr/share/nginx/html/motor.js
 COPY niveles.js /usr/share/nginx/html/niveles.js
 COPY fragmentos.js /usr/share/nginx/html/fragmentos.js
+COPY favicon.ico /usr/share/nginx/html/favicon.ico
 COPY assets/ /usr/share/nginx/html/assets/
 
 EXPOSE 80
