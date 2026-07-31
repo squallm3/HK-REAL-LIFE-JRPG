@@ -26,6 +26,14 @@
 
   <div class="rune-line"></div>
 
+  <div id="auth-panel">
+    <div class="auth-row">
+      <button id="login-btn" class="text-btn" onclick="iniciarSesionGoogle()">Iniciar sesión con Google</button>
+      <button id="logout-btn" class="text-btn" onclick="cerrarSesion()" style="display:none;">Cerrar sesión</button>
+      <span id="user-info"></span>
+    </div>
+  </div>
+
   <div id="state-panel">
     <div id="state-row">
       <span id="state-level">Nivel 1</span>
@@ -131,6 +139,8 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="fragmentos.js"></script>
 <script src="motor.js"></script>
 <script>

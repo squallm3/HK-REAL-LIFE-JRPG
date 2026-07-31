@@ -96,6 +96,89 @@ function procesarTarea(xpActual, xpGanada, descripcion) {
   };
 }
 
+// ── LOGIN CON GOOGLE + SINCRONIZACIÓN CON EL BACKEND ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAwy1_6C6_p_N-PxE2_NeSHerXpdXNpvqo",
+  authDomain: "lista-de-tareas-gnostica.firebaseapp.com",
+  projectId: "lista-de-tareas-gnostica",
+  storageBucket: "lista-de-tareas-gnostica.firebasestorage.app",
+  messagingSenderId: "53950811543",
+  appId: "1:53950811543:web:892bcc7a08db5c89ae48d2",
+  measurementId: "G-QL4L4RLHC1"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const BACKEND_URL = 'http://192.168.1.133:3001';
+
+let usandoBackend = false;
+
+function iniciarSesionGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(function(err) {
+    console.error('Error de login:', err);
+    appendError('No se pudo iniciar sesión: ' + err.message);
+  });
+}
+
+function cerrarSesion() {
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(function(user) {
+  const loginBtn = document.getElementById('login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userInfo = document.getElementById('user-info');
+
+  if (user) {
+    loginBtn.style.display = 'none';
+    logoutBtn.style.display = '';
+    userInfo.textContent = user.email;
+    usandoBackend = true;
+    cargarPersonajeBackend();
+  } else {
+    loginBtn.style.display = '';
+    logoutBtn.style.display = 'none';
+    userInfo.textContent = '';
+    usandoBackend = false;
+    cargarPartida();
+    renderState();
+  }
+});
+
+async function cargarPersonajeBackend() {
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const resp = await fetch(BACKEND_URL + '/api/personajes/mio', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    xpTotalJugador = data.xpAcumulada;
+    renderState();
+  } catch (e) {
+    console.error('No se pudo cargar el personaje del backend:', e);
+    appendError('No se pudo conectar con el servidor para traer tu progreso.');
+  }
+}
+
+async function guardarPersonajeBackend() {
+  if (!usandoBackend || !auth.currentUser) return;
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const nivel = findLevelByXp(xpTotalJugador);
+    await fetch(BACKEND_URL + '/api/personajes/mio', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ xpAcumulada: xpTotalJugador, nivelId: nivel.n })
+    });
+  } catch (e) {
+    console.error('No se pudo guardar en el backend:', e);
+  }
+}
+
 let xpTotalJugador = 0;
 
 // ── PERSISTENCIA (localStorage) ──
@@ -248,6 +331,7 @@ function eliminarTareaDelDia(idx) {
   xpTotalJugador = Math.max(0, xpTotalJugador - tarea.xp);
   renderState();
   guardarPartida();
+  guardarPersonajeBackend();
   abrirResumenDia();
 }
 
@@ -406,6 +490,7 @@ function probarPassword() {
   xpTotalJugador = match.xp;
   renderState();
   guardarPartida();
+  guardarPersonajeBackend();
   status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
   status.style.color = 'var(--green-magic)';
   input.value = '';
@@ -539,6 +624,7 @@ function sendMessage() {
   appendValisTurno(resultado);
   renderState();
   guardarPartida();
+  guardarPersonajeBackend();
   registrarTareaDelDia(desc, xp);
 }
 
