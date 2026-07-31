@@ -325,10 +325,15 @@ function appendMessage(role, text) {
   div.className = 'msg ' + role;
 
   const avatarDiv = document.createElement('div');
-  avatarDiv.className = 'avatar';
-  const canvas = document.createElement('canvas');
-  avatarDiv.appendChild(canvas);
-  if (role === 'jugador') drawJugadorAvatar(canvas); else drawValisAvatar(canvas);
+  if (role === 'jugador') {
+    avatarDiv.className = 'avatar';
+    const canvas = document.createElement('canvas');
+    avatarDiv.appendChild(canvas);
+    drawJugadorAvatar(canvas);
+  } else {
+    avatarDiv.className = 'avatar-valis-emoji';
+    avatarDiv.textContent = '🦊';
+  }
 
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'bubble';
@@ -353,10 +358,8 @@ function appendValisTurno(resultado) {
   div.className = 'msg valis';
 
   const avatarDiv = document.createElement('div');
-  avatarDiv.className = 'avatar';
-  const canvas = document.createElement('canvas');
-  drawValisAvatar(canvas);
-  avatarDiv.appendChild(canvas);
+  avatarDiv.className = 'avatar-valis-emoji';
+  avatarDiv.textContent = '🦊';
 
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'bubble';
