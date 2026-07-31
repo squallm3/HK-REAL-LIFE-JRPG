@@ -37,6 +37,7 @@
       <button class="send-btn" onclick="exportarPartida()" title="Descargar partida">💾</button>
       <label class="send-btn" for="import-file-input" title="Cargar partida" style="cursor:pointer;">📂</label>
       <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importarPartidaArchivo(event)">
+      <button class="send-btn" onclick="abrirResumenDia()" title="Resumen del día">📋</button>
       <span id="save-status"></span>
     </div>
   </div>
@@ -113,6 +114,16 @@
 
 <div id="lightbox-overlay" class="modal-overlay hidden" onclick="cerrarLightbox()">
   <img id="lightbox-img" src="" alt="" class="lightbox-img">
+</div>
+
+<div id="resumen-modal-overlay" class="modal-overlay hidden" onclick="cerrarResumenDiaOverlay(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="cerrarResumenDia()" aria-label="Cerrar">✕</button>
+    <h2 class="modal-titulo">Resumen del día</h2>
+    <div id="resumen-lista"></div>
+    <div class="modal-divider"></div>
+    <p id="resumen-total" style="color:var(--gold-bright);font-size:13px;text-align:center;"></p>
+  </div>
 </div>
 
 <script src="fragmentos.js"></script>

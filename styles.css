@@ -329,3 +329,8 @@ footer { text-align: center; padding: 8px 0; font-size: 10px; color: var(--text-
   max-width: 90vw; max-height: 85vh;
   border: 2px solid var(--gold-dim); object-fit: contain;
 }
+
+.resumen-row {
+  display: flex; justify-content: space-between; font-size: 12px;
+  padding: 6px 0; border-bottom: 1px solid rgba(201,168,76,0.15); color: var(--text-body);
+}

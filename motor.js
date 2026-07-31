@@ -163,6 +163,73 @@ function importarPartidaArchivo(event) {
   event.target.value = '';
 }
 
+// ── RESUMEN DEL DÍA ──
+const DIA_KEY = 'odisea_haikus_gnosticos_dia';
+
+function fechaHoy() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function registrarTareaDelDia(desc, xp) {
+  let data;
+  try {
+    const raw = localStorage.getItem(DIA_KEY);
+    data = raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    data = null;
+  }
+  const hoy = fechaHoy();
+  if (!data || data.fecha !== hoy) {
+    data = { fecha: hoy, tareas: [] };
+  }
+  data.tareas.push({ desc, xp });
+  try {
+    localStorage.setItem(DIA_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('No se pudo guardar el resumen del día:', e);
+  }
+}
+
+function abrirResumenDia() {
+  let data;
+  try {
+    const raw = localStorage.getItem(DIA_KEY);
+    data = raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    data = null;
+  }
+  const hoy = fechaHoy();
+  const lista = document.getElementById('resumen-lista');
+  const totalEl = document.getElementById('resumen-total');
+  lista.innerHTML = '';
+
+  if (!data || data.fecha !== hoy || data.tareas.length === 0) {
+    lista.innerHTML = '<p style="color:var(--text-dim);font-size:12px;">Todavía no registraste tareas hoy.</p>';
+    totalEl.textContent = '';
+  } else {
+    let total = 0;
+    data.tareas.forEach(t => {
+      total += t.xp;
+      const row = document.createElement('div');
+      row.className = 'resumen-row';
+      row.innerHTML = '<span>' + t.desc + '</span><span>+' + t.xp + ' XP</span>';
+      lista.appendChild(row);
+    });
+    totalEl.textContent = 'Total del día: ' + total.toLocaleString('es-AR') + ' XP';
+  }
+
+  document.getElementById('resumen-modal-overlay').classList.remove('hidden');
+}
+
+function cerrarResumenDia() {
+  document.getElementById('resumen-modal-overlay').classList.add('hidden');
+}
+
+function cerrarResumenDiaOverlay(e) {
+  if (e.target.id === 'resumen-modal-overlay') cerrarResumenDia();
+}
+
 function renderState() {
   const nivel = findLevelByXp(xpTotalJugador);
   const sig = nextLevel(nivel.n);
@@ -220,6 +287,7 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     cerrarLightbox();
     cerrarModalEstado();
+    cerrarResumenDia();
   }
 });
 
@@ -440,6 +508,7 @@ function sendMessage() {
   appendValisTurno(resultado);
   renderState();
   guardarPartida();
+  registrarTareaDelDia(desc, xp);
 }
 
 document.getElementById('password-input').addEventListener('keydown', function(e) {
