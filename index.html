@@ -32,14 +32,6 @@
     <div id="xp-bar-label"></div>
   </div>
 
-  <div id="password-panel">
-    <div class="password-row">
-      <input type="text" id="password-input" placeholder="Contraseña de un nivel..." />
-      <button class="send-btn" id="password-btn" onclick="probarPassword()" title="Ingresar">🔑</button>
-    </div>
-    <div id="password-status"></div>
-  </div>
-
   <div id="save-panel">
     <div class="save-row">
       <button class="send-btn" onclick="exportarPartida()" title="Descargar partida">💾</button>
@@ -50,18 +42,6 @@
   </div>
 
   <div class="rune-line"></div>
-
-  <div id="chat-window" class="pixel-border">
-    <div id="messages">
-      <div id="empty-state">
-        <div class="big-rune">🌿</div>
-        <p>
-          Registrá tu primera tarea, viajero...<br><br>
-          <span style="color:var(--gold-dim)">VALIS está esperando.</span>
-        </p>
-      </div>
-    </div>
-  </div>
 
   <div id="input-area">
     <div class="input-row">
@@ -83,6 +63,28 @@
       <span id="char-count">0 caracteres</span>
       <span style="color:var(--text-dim);font-size:10px;letter-spacing:1px;">ENTER = ENVIAR</span>
     </div>
+  </div>
+
+  <div id="chat-window" class="pixel-border">
+    <div id="messages">
+      <div id="empty-state">
+        <div class="big-rune">🌿</div>
+        <p>
+          Registrá tu primera tarea, viajero...<br><br>
+          <span style="color:var(--gold-dim)">VALIS está esperando.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rune-line"></div>
+
+  <div id="password-panel">
+    <div class="password-row">
+      <input type="text" id="password-input" placeholder="Contraseña de un nivel..." />
+      <button class="send-btn" id="password-btn" onclick="probarPassword()" title="Ingresar">🔑</button>
+    </div>
+    <div id="password-status"></div>
   </div>
 
   <footer>La Odisea de los Haikus Gnósticos &mdash; 100% offline</footer>
