@@ -211,7 +211,7 @@ h1 {
 #input-area { background: var(--dark2); border: 2px solid var(--gold-dim); border-bottom: none; padding: 12px; position: relative; margin: 4px 0 0; }
 #input-area::before { content: '⚔ JUGADOR ⚔'; position: absolute; top: -10px; right: 16px; background: var(--dark2); padding: 0 8px; color: var(--gold-dim); font-size: 10px; letter-spacing: 2px; }
 
-.input-row { display: flex; gap: 8px; align-items: stretch; }
+.input-row { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
 
 #xp-select {
   background: var(--dark); border: 2px solid var(--gold-dim);
@@ -229,13 +229,22 @@ h1 {
 #xp-select option { background: var(--dark2); color: var(--gold-bright); }
 
 #task-desc-input {
-  flex: 1; background: var(--dark); border: 2px solid var(--gold-dim);
+  flex: 1 1 200px; max-width: 260px; background: var(--dark); border: 2px solid var(--gold-dim);
   color: var(--text-body); padding: 0 12px; font-family: 'Courier New', monospace;
   font-size: 13px; height: 42px; outline: none; transition: border-color 0.2s;
   border-radius: 0;
 }
 #task-desc-input:focus { border-color: var(--gold); }
 #task-desc-input::placeholder { color: var(--text-dim); }
+
+.text-btn {
+  background: var(--dark); border: 2px solid var(--gold); color: var(--gold);
+  height: 42px; padding: 0 14px; cursor: pointer;
+  font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 0.5px;
+  white-space: nowrap; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.text-btn:hover { background: var(--gold); color: var(--dark); box-shadow: 0 0 12px rgba(201,168,76,0.6); }
 
 .send-btn {
   background: var(--dark); border: 2px solid var(--gold); color: var(--gold);

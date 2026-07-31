@@ -37,7 +37,6 @@
       <button class="send-btn" onclick="exportarPartida()" title="Descargar partida">💾</button>
       <label class="send-btn" for="import-file-input" title="Cargar partida" style="cursor:pointer;">📂</label>
       <input type="file" id="import-file-input" accept="application/json" style="display:none" onchange="importarPartidaArchivo(event)">
-      <button class="send-btn" onclick="abrirResumenDia()" title="Resumen del día">📋</button>
       <span id="save-status"></span>
     </div>
   </div>
@@ -56,9 +55,10 @@
       <input
         type="text"
         id="task-desc-input"
-        placeholder="Descripción de la tarea (opcional, Enter para enviar)"
+        placeholder="Descripción (opcional)"
       />
-      <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Enviar">⚔</button>
+      <button class="text-btn" id="send-btn" onclick="sendMessage()">Ingresar tarea</button>
+      <button class="text-btn" onclick="abrirResumenDia()">Resumen del día</button>
     </div>
     <div id="controls">
       <span id="char-count">0 caracteres</span>
