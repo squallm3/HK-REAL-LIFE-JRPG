@@ -349,14 +349,19 @@ function renderState() {
   document.getElementById('state-level').textContent = 'Nivel ' + nivel.n;
   document.getElementById('state-xp').textContent = xpTotalJugador.toLocaleString('es-AR') + ' XP';
   document.getElementById('state-title').textContent = nivel.t;
+  const fill = document.getElementById('xp-bar-fill');
   if (sig) {
     const pct = Math.min(100, Math.round(((xpTotalJugador - nivel.xp) / (sig.xp - nivel.xp)) * 100));
-    document.getElementById('xp-bar-fill').style.width = pct + '%';
+    fill.style.width = pct + '%';
     document.getElementById('xp-bar-label').textContent = (sig.xp - xpTotalJugador).toLocaleString('es-AR') + ' XP para el nivel ' + sig.n;
   } else {
-    document.getElementById('xp-bar-fill').style.width = '100%';
+    fill.style.width = '100%';
     document.getElementById('xp-bar-label').textContent = 'Nivel máximo alcanzado';
   }
+  fill.classList.remove('pulsing');
+  void fill.offsetWidth;
+  fill.classList.add('pulsing');
+  setTimeout(function() { fill.classList.remove('pulsing'); }, 700);
 }
 
 function pad2(n) { return String(n).padStart(2, '0'); }
