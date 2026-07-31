@@ -209,17 +209,46 @@ function abrirResumenDia() {
     totalEl.textContent = '';
   } else {
     let total = 0;
-    data.tareas.forEach(t => {
+    data.tareas.forEach((t, i) => {
       total += t.xp;
       const row = document.createElement('div');
       row.className = 'resumen-row';
-      row.innerHTML = '<span>' + t.desc + '</span><span>+' + t.xp + ' XP</span>';
+      row.innerHTML =
+        '<span>' + t.desc + '</span>' +
+        '<span class="resumen-row-right">+' + t.xp + ' XP' +
+        '<button class="del-tarea-btn" onclick="eliminarTareaDelDia(' + i + ')" aria-label="Eliminar tarea">✕</button>' +
+        '</span>';
       lista.appendChild(row);
     });
     totalEl.textContent = 'Total del día: ' + total.toLocaleString('es-AR') + ' XP';
   }
 
   document.getElementById('resumen-modal-overlay').classList.remove('hidden');
+}
+
+function eliminarTareaDelDia(idx) {
+  let data;
+  try {
+    const raw = localStorage.getItem(DIA_KEY);
+    data = raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    data = null;
+  }
+  if (!data || !data.tareas || !data.tareas[idx]) return;
+
+  const tarea = data.tareas[idx];
+  data.tareas.splice(idx, 1);
+
+  try {
+    localStorage.setItem(DIA_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('No se pudo actualizar el resumen del día:', e);
+  }
+
+  xpTotalJugador = Math.max(0, xpTotalJugador - tarea.xp);
+  renderState();
+  guardarPartida();
+  abrirResumenDia();
 }
 
 function cerrarResumenDia() {
