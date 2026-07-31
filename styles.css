@@ -246,7 +246,7 @@ h1 {
 
 .error-block { background: linear-gradient(135deg, #2a0a0a 0%, var(--dark3) 100%); border: 2px solid var(--red); border-left: 4px solid var(--red-bright); padding: 10px 13px; margin-bottom: 18px; color: #f0a0a0; font-size: 12px; }
 
-.aviso-block { background: linear-gradient(135deg, #2a2010 0%, var(--dark3) 100%); border: 2px solid var(--gold-dim); border-left: 4px solid var(--gold); padding: 10px 13px; margin-bottom: 18px; color: var(--text-body); font-size: 12px; }
+.aviso-block { background: linear-gradient(135deg, #2a0a0a 0%, var(--dark3) 100%); border: 2px solid var(--red); border-left: 4px solid var(--red-bright); padding: 10px 13px; margin-bottom: 18px; color: #f0a0a0; font-size: 12px; }
 
 #input-area { background: var(--dark2); border: 2px solid var(--gold-dim); border-bottom: none; padding: 12px; position: relative; margin: 4px 0 0; }
 #input-area::before { content: '⚔ JUGADOR ⚔'; position: absolute; top: -10px; right: 16px; background: var(--dark2); padding: 0 8px; color: var(--gold-dim); font-size: 10px; letter-spacing: 2px; }
