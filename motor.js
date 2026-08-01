@@ -161,6 +161,25 @@ async function cargarPersonajeBackend() {
   }
 }
 
+// Refresca xpTotalJugador desde el backend (sin avisos de error visibles),
+// para usar como paso previo a cualquier accion que modifique XP.
+// Así ningún dispositivo actúa nunca sobre un valor viejo que tenía en memoria.
+async function refrescarXpBackend() {
+  if (!usandoBackend || !auth.currentUser) return;
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const resp = await fetch(BACKEND_URL + '/api/personajes/mio', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    xpTotalJugador = data.xpAcumulada;
+    renderState();
+  } catch (e) {
+    console.error('No se pudo refrescar el progreso antes de la acción:', e);
+  }
+}
+
 // Suma (o resta, si delta es negativo) de forma ATOMICA en el backend.
 // Devuelve la xpAcumulada REAL segun el servidor (fuente de verdad), o null si falló.
 async function sumarXpBackend(delta) {
@@ -359,6 +378,7 @@ async function eliminarTareaDelDia(idx) {
     console.error('No se pudo actualizar el resumen del día:', e);
   }
 
+  await refrescarXpBackend();
   const nivelAntes = findLevelByXp(xpTotalJugador).n;
 
   const xpBackend = await sumarXpBackend(-tarea.xp);
@@ -532,6 +552,7 @@ async function probarPassword() {
     return;
   }
 
+  await refrescarXpBackend();
   const nivelActual = findLevelByXp(xpTotalJugador);
 
   if (match.n === nivelActual.n) {
@@ -678,6 +699,7 @@ async function sendMessage() {
   descInput.value = '';
   updateCharCount();
 
+  await refrescarXpBackend();
   const xpAntes = xpTotalJugador;
   const xpDespuesBackend = await sumarXpBackend(xp);
   const xpDespuesReal = (xpDespuesBackend !== null) ? xpDespuesBackend : (xpAntes + xp);
