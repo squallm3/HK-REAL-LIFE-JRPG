@@ -79,9 +79,9 @@ function levelsCrossed(xpBefore, xpAfter) {
 }
 
 // ── PROCESA UNA TAREA ESTRUCTURADA (selector de XP + descripción) ──
-function procesarTarea(xpActual, xpGanada, descripcion) {
+function procesarTarea(xpActual, xpGanada, descripcion, xpDespuesAutoritativo) {
   const xpAntes = xpActual;
-  const xpDespues = xpActual + xpGanada;
+  const xpDespues = (typeof xpDespuesAutoritativo === 'number') ? xpDespuesAutoritativo : (xpActual + xpGanada);
   const nivelAntes = findLevelByXp(xpAntes);
   const nivelDespues = findLevelByXp(xpDespues);
   const nivelesSubidos = levelsCrossed(xpAntes, xpDespues);
@@ -161,21 +161,51 @@ async function cargarPersonajeBackend() {
   }
 }
 
-async function guardarPersonajeBackend() {
-  if (!usandoBackend || !auth.currentUser) return;
+// Suma (o resta, si delta es negativo) de forma ATOMICA en el backend.
+// Devuelve la xpAcumulada REAL segun el servidor (fuente de verdad), o null si falló.
+async function sumarXpBackend(delta) {
+  if (!usandoBackend || !auth.currentUser) return null;
   try {
     const token = await auth.currentUser.getIdToken();
-    const nivel = findLevelByXp(xpTotalJugador);
-    await fetch(BACKEND_URL + '/api/personajes/mio', {
+    const resp = await fetch(BACKEND_URL + '/api/personajes/mio/sumar-xp', {
       method: 'PUT',
       headers: {
         'Authorization': 'Bearer ' + token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ xpAcumulada: xpTotalJugador, nivelId: nivel.n })
+      body: JSON.stringify({ delta })
     });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    return data.xpAcumulada;
   } catch (e) {
-    console.error('No se pudo guardar en el backend:', e);
+    console.error('No se pudo sumar XP en el backend:', e);
+    appendError('No se pudo sincronizar con el servidor. Revisá tu conexión.');
+    return null;
+  }
+}
+
+// Fija un valor absoluto en el backend (salto por contraseña, importar partida).
+// Devuelve la xpAcumulada REAL segun el servidor, o null si falló.
+async function establecerXpBackend(xpAcumulada) {
+  if (!usandoBackend || !auth.currentUser) return null;
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const resp = await fetch(BACKEND_URL + '/api/personajes/mio/establecer-xp', {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ xpAcumulada })
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    return data.xpAcumulada;
+  } catch (e) {
+    console.error('No se pudo establecer XP en el backend:', e);
+    appendError('No se pudo sincronizar con el servidor. Revisá tu conexión.');
+    return null;
   }
 }
 
@@ -223,7 +253,7 @@ function importarPartidaArchivo(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     try {
       const data = JSON.parse(e.target.result);
       if (typeof data.xp !== 'number' || data.xp < 0) {
@@ -231,7 +261,8 @@ function importarPartidaArchivo(event) {
         status.style.color = 'var(--red-bright)';
         return;
       }
-      xpTotalJugador = data.xp;
+      const xpBackend = await establecerXpBackend(data.xp);
+      xpTotalJugador = (xpBackend !== null) ? xpBackend : data.xp;
       renderState();
       guardarPartida();
       const nivel = findLevelByXp(xpTotalJugador);
@@ -309,7 +340,7 @@ function abrirResumenDia() {
   document.getElementById('resumen-modal-overlay').classList.remove('hidden');
 }
 
-function eliminarTareaDelDia(idx) {
+async function eliminarTareaDelDia(idx) {
   let data;
   try {
     const raw = localStorage.getItem(DIA_KEY);
@@ -329,12 +360,14 @@ function eliminarTareaDelDia(idx) {
   }
 
   const nivelAntes = findLevelByXp(xpTotalJugador).n;
-  xpTotalJugador = Math.max(0, xpTotalJugador - tarea.xp);
+
+  const xpBackend = await sumarXpBackend(-tarea.xp);
+  xpTotalJugador = (xpBackend !== null) ? xpBackend : Math.max(0, xpTotalJugador - tarea.xp);
+
   const nivelDespues = findLevelByXp(xpTotalJugador).n;
 
   renderState();
   guardarPartida();
-  guardarPersonajeBackend();
 
   if (nivelDespues < nivelAntes) {
     appendBajadaNivel(nivelAntes, nivelDespues);
@@ -485,7 +518,7 @@ function renderModalEstado() {
   }
 }
 
-function probarPassword() {
+async function probarPassword() {
   const input = document.getElementById('password-input');
   const status = document.getElementById('password-status');
   const texto = input.value.trim();
@@ -509,10 +542,10 @@ function probarPassword() {
     return;
   }
 
-  xpTotalJugador = match.xp;
+  const xpBackend = await establecerXpBackend(match.xp);
+  xpTotalJugador = (xpBackend !== null) ? xpBackend : match.xp;
   renderState();
   guardarPartida();
-  guardarPersonajeBackend();
   status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
   status.style.color = 'var(--green-magic)';
   input.value = '';
@@ -633,7 +666,7 @@ function scrollToBottom() {
   m.scrollTop = m.scrollHeight;
 }
 
-function sendMessage() {
+async function sendMessage() {
   const descInput = document.getElementById('task-desc-input');
   const xp = 111;
   const desc = descInput.value.trim() || 'Tarea';
@@ -645,12 +678,15 @@ function sendMessage() {
   descInput.value = '';
   updateCharCount();
 
-  const resultado = procesarTarea(xpTotalJugador, xp, desc);
+  const xpAntes = xpTotalJugador;
+  const xpDespuesBackend = await sumarXpBackend(xp);
+  const xpDespuesReal = (xpDespuesBackend !== null) ? xpDespuesBackend : (xpAntes + xp);
+
+  const resultado = procesarTarea(xpAntes, xp, desc, xpDespuesReal);
   xpTotalJugador = resultado.xpDespues;
   appendValisTurno(resultado);
   renderState();
   guardarPartida();
-  guardarPersonajeBackend();
   registrarTareaDelDia(desc, xp);
 }
 
