@@ -634,9 +634,8 @@ function scrollToBottom() {
 }
 
 function sendMessage() {
-  const xpSelect = document.getElementById('xp-select');
   const descInput = document.getElementById('task-desc-input');
-  const xp = parseInt(xpSelect.value, 10);
+  const xp = 111;
   const desc = descInput.value.trim() || 'Tarea';
 
   const emptyState = document.getElementById('empty-state');
