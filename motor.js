@@ -297,6 +297,8 @@ function importarPartidaArchivo(event) {
 }
 
 // ── RESUMEN DEL DÍA ──
+// Si hay sesión con Google, se sincroniza contra /api/tareas-dia (mismo resumen en todos los dispositivos).
+// Si no hay sesión, sigue funcionando local con localStorage, como antes.
 const DIA_KEY = 'odisea_haikus_gnosticos_dia';
 
 function fechaHoy() {
@@ -304,7 +306,26 @@ function fechaHoy() {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
-function registrarTareaDelDia(desc, xp) {
+async function registrarTareaDelDia(desc, xp) {
+  if (usandoBackend && auth.currentUser) {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ descripcion: desc, xp })
+      });
+      if (resp.ok) return;
+      throw new Error('HTTP ' + resp.status);
+    } catch (e) {
+      console.error('No se pudo registrar la tarea del día en el backend:', e);
+    }
+  }
+
+  // Fallback local (sin sesión, o si falló el backend)
   let data;
   try {
     const raw = localStorage.getItem(DIA_KEY);
@@ -324,32 +345,55 @@ function registrarTareaDelDia(desc, xp) {
   }
 }
 
-function abrirResumenDia() {
-  let data;
-  try {
-    const raw = localStorage.getItem(DIA_KEY);
-    data = raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    data = null;
-  }
-  const hoy = fechaHoy();
+async function abrirResumenDia() {
   const lista = document.getElementById('resumen-lista');
   const totalEl = document.getElementById('resumen-total');
   lista.innerHTML = '';
 
-  if (!data || data.fecha !== hoy || data.tareas.length === 0) {
+  let tareas = [];
+
+  if (usandoBackend && auth.currentUser) {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const rows = await resp.json();
+      tareas = rows.map(r => ({ id: 'srv-' + r.id, desc: r.descripcion, xp: r.xp }));
+    } catch (e) {
+      console.error('No se pudo traer el resumen del día del backend:', e);
+      lista.innerHTML = '<p style="color:var(--red-bright);font-size:12px;">No se pudo traer el resumen del servidor.</p>';
+      document.getElementById('resumen-modal-overlay').classList.remove('hidden');
+      return;
+    }
+  } else {
+    let data;
+    try {
+      const raw = localStorage.getItem(DIA_KEY);
+      data = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      data = null;
+    }
+    const hoy = fechaHoy();
+    if (data && data.fecha === hoy) {
+      tareas = data.tareas.map((t, i) => ({ id: 'local-' + i, desc: t.desc, xp: t.xp }));
+    }
+  }
+
+  if (tareas.length === 0) {
     lista.innerHTML = '<p style="color:var(--text-dim);font-size:12px;">Todavía no registraste tareas hoy.</p>';
     totalEl.textContent = '';
   } else {
     let total = 0;
-    data.tareas.forEach((t, i) => {
+    tareas.forEach(t => {
       total += t.xp;
       const row = document.createElement('div');
       row.className = 'resumen-row';
       row.innerHTML =
         '<span>' + t.desc + '</span>' +
         '<span class="resumen-row-right">+' + t.xp + ' XP' +
-        '<button class="del-tarea-btn" onclick="eliminarTareaDelDia(' + i + ')" aria-label="Eliminar tarea">✕</button>' +
+        '<button class="del-tarea-btn" onclick="eliminarTareaDelDia(\'' + t.id + '\')" aria-label="Eliminar tarea">✕</button>' +
         '</span>';
       lista.appendChild(row);
     });
@@ -359,30 +403,54 @@ function abrirResumenDia() {
   document.getElementById('resumen-modal-overlay').classList.remove('hidden');
 }
 
-async function eliminarTareaDelDia(idx) {
-  let data;
-  try {
-    const raw = localStorage.getItem(DIA_KEY);
-    data = raw ? JSON.parse(raw) : null;
-  } catch (e) {
-    data = null;
-  }
-  if (!data || !data.tareas || !data.tareas[idx]) return;
+async function eliminarTareaDelDia(id) {
+  const idStr = String(id);
+  let xpEliminada = null;
 
-  const tarea = data.tareas[idx];
-  data.tareas.splice(idx, 1);
+  if (idStr.startsWith('srv-')) {
+    if (!usandoBackend || !auth.currentUser) return;
+    const idReal = idStr.replace('srv-', '');
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/' + idReal, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      xpEliminada = data.xp;
+    } catch (e) {
+      console.error('No se pudo eliminar la tarea del backend:', e);
+      appendError('No se pudo eliminar la tarea del servidor.');
+      return;
+    }
+  } else if (idStr.startsWith('local-')) {
+    const idx = parseInt(idStr.replace('local-', ''), 10);
+    let data;
+    try {
+      const raw = localStorage.getItem(DIA_KEY);
+      data = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      data = null;
+    }
+    if (!data || !data.tareas || !data.tareas[idx]) return;
 
-  try {
-    localStorage.setItem(DIA_KEY, JSON.stringify(data));
-  } catch (e) {
-    console.error('No se pudo actualizar el resumen del día:', e);
+    xpEliminada = data.tareas[idx].xp;
+    data.tareas.splice(idx, 1);
+    try {
+      localStorage.setItem(DIA_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error('No se pudo actualizar el resumen del día:', e);
+    }
+  } else {
+    return;
   }
 
   await refrescarXpBackend();
   const nivelAntes = findLevelByXp(xpTotalJugador).n;
 
-  const xpBackend = await sumarXpBackend(-tarea.xp);
-  xpTotalJugador = (xpBackend !== null) ? xpBackend : Math.max(0, xpTotalJugador - tarea.xp);
+  const xpBackend = await sumarXpBackend(-xpEliminada);
+  xpTotalJugador = (xpBackend !== null) ? xpBackend : Math.max(0, xpTotalJugador - xpEliminada);
 
   const nivelDespues = findLevelByXp(xpTotalJugador).n;
 
@@ -709,7 +777,7 @@ async function sendMessage() {
   appendValisTurno(resultado);
   renderState();
   guardarPartida();
-  registrarTareaDelDia(desc, xp);
+  await registrarTareaDelDia(desc, xp);
 }
 
 document.getElementById('password-input').addEventListener('keydown', function(e) {
