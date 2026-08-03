@@ -533,12 +533,23 @@ async function obtenerTareasDelDiaTexto() {
   if (tareas.length === 0) {
     return 'Todavía no registraste tareas hoy.';
   }
-  return tareas.map(t => '- ' + t.desc + ' (+' + t.xp + ' XP)').join('\n');
+  return tareas.map(t => '- ' + t.desc).join('\n');
+}
+
+function obtenerEncabezadoNivelTexto() {
+  const nivel = findLevelByXp(xpTotalJugador);
+  const siguiente = nextLevel(nivel.n);
+  const faltante = siguiente ? (siguiente.xp - xpTotalJugador) : 0;
+  const lineaFaltante = siguiente
+    ? 'XP faltante para el Nivel ' + siguiente.n + ': ' + faltante.toLocaleString('es-AR')
+    : 'Nivel máximo alcanzado';
+  return 'Nivel actual: ' + nivel.n + ' — ' + nivel.t + '\n' + lineaFaltante + '\n';
 }
 
 async function abrirInfografia() {
+  const encabezado = obtenerEncabezadoNivelTexto();
   const listado = await obtenerTareasDelDiaTexto();
-  const textoCompleto = INFOGRAFIA_PROMPT_BASE + listado;
+  const textoCompleto = INFOGRAFIA_PROMPT_BASE + encabezado + listado;
   document.getElementById('infografia-texto').textContent = textoCompleto;
 
   const btn = document.getElementById('infografia-copiar-btn');
