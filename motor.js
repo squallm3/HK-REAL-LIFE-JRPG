@@ -1,5 +1,3 @@
-
-Motor · JS
 (function() {
   const container = document.getElementById('stars');
   for (let i = 0; i < 60; i++) {
@@ -13,7 +11,7 @@ Motor · JS
     container.appendChild(s);
   }
 })();
- 
+
 function drawJugadorAvatar(canvas) {
   const ctx = canvas.getContext('2d');
   const S = 10;
@@ -34,7 +32,7 @@ function drawJugadorAvatar(canvas) {
   ctx.fillRect(S/2, 3*S, S, S);
   ctx.fillRect(2*S+S/2, 3*S, S, S);
 }
- 
+
 function drawValisAvatar(canvas) {
   const ctx = canvas.getContext('2d');
   const S = 10;
@@ -55,7 +53,7 @@ function drawValisAvatar(canvas) {
   ctx.fillStyle = '#c9a84c';
   ctx.fillRect(S/2, 2*S, 3*S, S/4);
 }
- 
+
 function findLevelByXp(totalXp) {
   let current = LEVELS[0];
   for (const lvl of LEVELS) {
@@ -64,11 +62,11 @@ function findLevelByXp(totalXp) {
   }
   return current;
 }
- 
+
 function nextLevel(levelNumber) {
   return LEVELS.find(l => l.n === levelNumber + 1) || null;
 }
- 
+
 function levelsCrossed(xpBefore, xpAfter) {
   const before = findLevelByXp(xpBefore).n;
   const after = findLevelByXp(xpAfter).n;
@@ -79,7 +77,7 @@ function levelsCrossed(xpBefore, xpAfter) {
   }
   return crossed;
 }
- 
+
 // ── PROCESA UNA TAREA ESTRUCTURADA (selector de XP + descripción) ──
 function procesarTarea(xpActual, xpGanada, descripcion, xpDespuesAutoritativo) {
   const xpAntes = xpActual;
@@ -97,7 +95,7 @@ function procesarTarea(xpActual, xpGanada, descripcion, xpDespuesAutoritativo) {
     siguienteNivel
   };
 }
- 
+
 // ── LOGIN CON GOOGLE + SINCRONIZACIÓN CON EL BACKEND ──
 const firebaseConfig = {
   apiKey: "AIzaSyAwy1_6C6_p_N-PxE2_NeSHerXpdXNpvqo",
@@ -111,11 +109,11 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const BACKEND_URL = (window.location.hostname === 'hkjrpg.duckdns.org') ? '' : 'http://192.168.1.133:3001';
- 
+
 let usandoBackend = false;
 let pollingIntervalId = null;
 const POLLING_MS = 30000;
- 
+
 function iniciarSesionGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider).catch(function(err) {
@@ -123,23 +121,23 @@ function iniciarSesionGoogle() {
     appendError('No se pudo iniciar sesión: ' + err.message);
   });
 }
- 
+
 function cerrarSesion() {
   auth.signOut();
 }
- 
+
 auth.onAuthStateChanged(function(user) {
   const loginBtn = document.getElementById('login-btn');
   const logoutBtn = document.getElementById('logout-btn');
   const userInfo = document.getElementById('user-info');
- 
+
   if (user) {
     loginBtn.style.display = 'none';
     logoutBtn.style.display = '';
     userInfo.textContent = user.email;
     usandoBackend = true;
     cargarPersonajeBackend();
- 
+
     if (pollingIntervalId) clearInterval(pollingIntervalId);
     pollingIntervalId = setInterval(refrescarXpBackend, POLLING_MS);
   } else {
@@ -149,14 +147,14 @@ auth.onAuthStateChanged(function(user) {
     usandoBackend = false;
     cargarPartida();
     renderState();
- 
+
     if (pollingIntervalId) {
       clearInterval(pollingIntervalId);
       pollingIntervalId = null;
     }
   }
 });
- 
+
 async function cargarPersonajeBackend() {
   try {
     const token = await auth.currentUser.getIdToken();
@@ -172,7 +170,7 @@ async function cargarPersonajeBackend() {
     appendError('No se pudo conectar con el servidor para traer tu progreso.');
   }
 }
- 
+
 // Refresca xpTotalJugador desde el backend (sin avisos de error visibles),
 // para usar como paso previo a cualquier accion que modifique XP.
 // Así ningún dispositivo actúa nunca sobre un valor viejo que tenía en memoria.
@@ -191,7 +189,7 @@ async function refrescarXpBackend() {
     console.error('No se pudo refrescar el progreso antes de la acción:', e);
   }
 }
- 
+
 // Suma (o resta, si delta es negativo) de forma ATOMICA en el backend.
 // Devuelve la xpAcumulada REAL segun el servidor (fuente de verdad), o null si falló.
 async function sumarXpBackend(delta) {
@@ -215,7 +213,7 @@ async function sumarXpBackend(delta) {
     return null;
   }
 }
- 
+
 // Fija un valor absoluto en el backend (salto por contraseña, importar partida).
 // Devuelve la xpAcumulada REAL segun el servidor, o null si falló.
 async function establecerXpBackend(xpAcumulada) {
@@ -239,12 +237,12 @@ async function establecerXpBackend(xpAcumulada) {
     return null;
   }
 }
- 
+
 let xpTotalJugador = 0;
- 
+
 // ── PERSISTENCIA (localStorage) ──
 const STORAGE_KEY = 'odisea_haikus_gnosticos_save';
- 
+
 function guardarPartida() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ xp: xpTotalJugador }));
@@ -252,7 +250,7 @@ function guardarPartida() {
     console.error('No se pudo guardar la partida:', e);
   }
 }
- 
+
 function cargarPartida() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -265,7 +263,7 @@ function cargarPartida() {
     console.error('No se pudo cargar la partida:', e);
   }
 }
- 
+
 // ── EXPORTAR / IMPORTAR PARTIDA (archivo JSON) ──
 function exportarPartida() {
   const data = JSON.stringify({ xp: xpTotalJugador }, null, 2);
@@ -277,12 +275,12 @@ function exportarPartida() {
   a.click();
   URL.revokeObjectURL(url);
 }
- 
+
 function importarPartidaArchivo(event) {
   const file = event.target.files[0];
   const status = document.getElementById('save-status');
   if (!file) return;
- 
+
   const reader = new FileReader();
   reader.onload = async function(e) {
     try {
@@ -307,17 +305,17 @@ function importarPartidaArchivo(event) {
   reader.readAsText(file);
   event.target.value = '';
 }
- 
+
 // ── RESUMEN DEL DÍA ──
 // Si hay sesión con Google, se sincroniza contra /api/tareas-dia (mismo resumen en todos los dispositivos).
 // Si no hay sesión, sigue funcionando local con localStorage, como antes.
 const DIA_KEY = 'odisea_haikus_gnosticos_dia';
- 
+
 function fechaHoy() {
   const d = new Date();
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
- 
+
 async function registrarTareaDelDia(desc, xp) {
   if (usandoBackend && auth.currentUser) {
     try {
@@ -336,7 +334,7 @@ async function registrarTareaDelDia(desc, xp) {
       console.error('No se pudo registrar la tarea del día en el backend:', e);
     }
   }
- 
+
   // Fallback local (sin sesión, o si falló el backend)
   let data;
   try {
@@ -356,14 +354,14 @@ async function registrarTareaDelDia(desc, xp) {
     console.error('No se pudo guardar el resumen del día:', e);
   }
 }
- 
+
 async function abrirResumenDia() {
   const lista = document.getElementById('resumen-lista');
   const totalEl = document.getElementById('resumen-total');
   lista.innerHTML = '';
- 
+
   let tareas = [];
- 
+
   if (usandoBackend && auth.currentUser) {
     try {
       const token = await auth.currentUser.getIdToken();
@@ -392,7 +390,7 @@ async function abrirResumenDia() {
       tareas = data.tareas.map((t, i) => ({ id: 'local-' + i, desc: t.desc, xp: t.xp }));
     }
   }
- 
+
   if (tareas.length === 0) {
     lista.innerHTML = '<p style="color:var(--text-dim);font-size:12px;">Todavía no registraste tareas hoy.</p>';
     totalEl.textContent = '';
@@ -411,14 +409,14 @@ async function abrirResumenDia() {
     });
     totalEl.textContent = 'Total del día: ' + total.toLocaleString('es-AR') + ' XP';
   }
- 
+
   document.getElementById('resumen-modal-overlay').classList.remove('hidden');
 }
- 
+
 async function eliminarTareaDelDia(id) {
   const idStr = String(id);
   let xpEliminada = null;
- 
+
   if (idStr.startsWith('srv-')) {
     if (!usandoBackend || !auth.currentUser) return;
     const idReal = idStr.replace('srv-', '');
@@ -446,7 +444,7 @@ async function eliminarTareaDelDia(id) {
       data = null;
     }
     if (!data || !data.tareas || !data.tareas[idx]) return;
- 
+
     xpEliminada = data.tareas[idx].xp;
     data.tareas.splice(idx, 1);
     try {
@@ -457,25 +455,25 @@ async function eliminarTareaDelDia(id) {
   } else {
     return;
   }
- 
+
   await refrescarXpBackend();
   const nivelAntes = findLevelByXp(xpTotalJugador).n;
- 
+
   const xpBackend = await sumarXpBackend(-xpEliminada);
   xpTotalJugador = (xpBackend !== null) ? xpBackend : Math.max(0, xpTotalJugador - xpEliminada);
- 
+
   const nivelDespues = findLevelByXp(xpTotalJugador).n;
- 
+
   renderState();
   guardarPartida();
- 
+
   if (nivelDespues < nivelAntes) {
     appendBajadaNivel(nivelAntes, nivelDespues);
   }
- 
+
   abrirResumenDia();
 }
- 
+
 function appendBajadaNivel(nivelAntes, nivelDespues) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
@@ -484,15 +482,93 @@ function appendBajadaNivel(nivelAntes, nivelDespues) {
   container.appendChild(div);
   scrollToBottom();
 }
- 
+
 function cerrarResumenDia() {
   document.getElementById('resumen-modal-overlay').classList.add('hidden');
 }
- 
+
 function cerrarResumenDiaOverlay(e) {
   if (e.target.id === 'resumen-modal-overlay') cerrarResumenDia();
 }
- 
+
+// ── INFOGRAFÍA (BETA) — genera el prompt para ChatGPT con las tareas de hoy ──
+const INFOGRAFIA_PROMPT_BASE = `A partir de ahora, cada vez que te envíe un texto, transformalo en una única infografía vertical 9:16. No copies el texto literalmente: resumilo y convertí la mayor parte de la información en recursos visuales (diagramas, mapas, tablas, indicadores, flechas, íconos e ilustraciones), usando la menor cantidad de texto posible. Escondé siempre un easter egg de Valis, un zorrito con toga y capucha violeta, oculto de forma sutil. Respondé únicamente con la imagen.
+Cada infografía debe sentirse completamente distinta a las anteriores. No reutilices composiciones, diagramas, colores, recursos gráficos ni estructuras. Si el contenido es repetitivo, resumilo inteligentemente. Si el tema hace referencia a un universo conocido, inspirate en su estética sin copiar personajes, logotipos ni elementos protegidos.
+ESTILOS
+Antes de generar cada imagen, elegí al azar uno de estos 33 estilos y comprometete al 100% con él, sin mezclarlos. No repitas el estilo utilizado en la infografía anterior si es posible. Toda la composición (paleta, tipografía, ilustraciones, iconografía, diagramación y recursos gráficos) debe pertenecer exclusivamente al estilo elegido: 1) Manual VHS de 1987, 2) Guía de videojuego NES/SNES, 3) Pokédex Gnóstica, 4) Revista Club Nintendo, 5) Pantalla MS-DOS, 6) Manual de Tamagotchi, 7) Grimorio RPG, 8) Catálogo de Teletienda de madrugada, 9) Enciclopedia Escolar de 1995, 10) Manual de Seguridad Laboral, 11) Menú de restaurante de anime, 12) Pantalla de carga de JRPG, 13) Interfaz de Evangelion, 14) Manual de entrenamiento de dojo, 15) Informe científico ultrasecreto, 16) Manual de Dungeons & Dragons, 17) Ficha SCP, 18) Publicidad noventosa, 19) Caja de CD-ROM educativo, 20) Programa de TV tipo Magic Kids, 21) Archivo X, 22) Manual de piloto de mecha, 23) Pantalla de estadísticas Final Fantasy, 24) Carta de Sailor Scout, 25) Folleto turístico, 26) Revista deportiva, 27) Instrucciones LEGO, 28) Prospecto farmacéutico, 29) Celular Nokia 1100, 30) Carta coleccionable, 31) Cinta encontrada (Found Footage), 32) Revista Hobby Consolas + Anime y 33) Museo del Futuro Perdido.
+LISTA DE TAREAS
+TAREAS REALIZADAS
+`;
+
+// Trae las tareas de hoy (backend si hay sesión, localStorage si no) como {desc, xp}
+async function obtenerTareasDelDiaTexto() {
+  let tareas = [];
+
+  if (usandoBackend && auth.currentUser) {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const rows = await resp.json();
+      tareas = rows.map(r => ({ desc: r.descripcion, xp: r.xp }));
+    } catch (e) {
+      console.error('No se pudieron traer las tareas del día para la infografía:', e);
+    }
+  } else {
+    let data;
+    try {
+      const raw = localStorage.getItem(DIA_KEY);
+      data = raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      data = null;
+    }
+    const hoy = fechaHoy();
+    if (data && data.fecha === hoy) {
+      tareas = data.tareas.map(t => ({ desc: t.desc, xp: t.xp }));
+    }
+  }
+
+  if (tareas.length === 0) {
+    return 'Todavía no registraste tareas hoy.';
+  }
+  return tareas.map(t => '- ' + t.desc + ' (+' + t.xp + ' XP)').join('\n');
+}
+
+async function abrirInfografia() {
+  const listado = await obtenerTareasDelDiaTexto();
+  const textoCompleto = INFOGRAFIA_PROMPT_BASE + listado;
+  document.getElementById('infografia-texto').textContent = textoCompleto;
+
+  const btn = document.getElementById('infografia-copiar-btn');
+  btn.classList.remove('copiado');
+  btn.textContent = 'Copiar al portapapeles';
+
+  document.getElementById('infografia-modal-overlay').classList.remove('hidden');
+}
+
+async function copiarInfografia() {
+  const texto = document.getElementById('infografia-texto').textContent;
+  const btn = document.getElementById('infografia-copiar-btn');
+  try {
+    await navigator.clipboard.writeText(texto);
+    btn.classList.add('copiado');
+    btn.textContent = 'Copiado ✓';
+  } catch (e) {
+    console.error('No se pudo copiar al portapapeles:', e);
+    appendError('No se pudo copiar al portapapeles.');
+  }
+}
+
+function cerrarInfografia() {
+  document.getElementById('infografia-modal-overlay').classList.add('hidden');
+}
+
+function cerrarInfografiaOverlay(e) {
+  if (e.target.id === 'infografia-modal-overlay') cerrarInfografia();
+}
+
 function renderState() {
   const nivel = findLevelByXp(xpTotalJugador);
   const sig = nextLevel(nivel.n);
@@ -513,11 +589,11 @@ function renderState() {
   fill.classList.add('pulsing');
   setTimeout(function() { fill.classList.remove('pulsing'); }, 700);
 }
- 
+
 function pad2(n) { return String(n).padStart(2, '0'); }
 function imgNivel(n) { return 'assets/niveles/nivel_' + pad2(n) + '_a.jpg'; }
 function imgArtefacto(n) { return 'assets/niveles/nivel_' + pad2(n) + '_b.jpg'; }
- 
+
 function abrirLightbox(src, alt) {
   const img = document.getElementById('lightbox-img');
   img.src = src;
@@ -527,7 +603,7 @@ function abrirLightbox(src, alt) {
 function cerrarLightbox() {
   document.getElementById('lightbox-overlay').classList.add('hidden');
 }
- 
+
 function crearImagenClickeable(src, alt, className) {
   const img = document.createElement('img');
   img.src = src;
@@ -537,33 +613,34 @@ function crearImagenClickeable(src, alt, className) {
   img.addEventListener('click', function() { abrirLightbox(src, alt); });
   return img;
 }
- 
+
 function abrirModalEstado() {
   renderModalEstado();
   document.getElementById('estado-modal-overlay').classList.remove('hidden');
 }
- 
+
 function cerrarModalEstado() {
   document.getElementById('estado-modal-overlay').classList.add('hidden');
 }
- 
+
 function cerrarModalEstadoOverlay(e) {
   if (e.target.id === 'estado-modal-overlay') cerrarModalEstado();
 }
- 
+
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     cerrarLightbox();
     cerrarModalEstado();
     cerrarResumenDia();
+    cerrarInfografia();
   }
 });
- 
+
 function renderModalEstado() {
   const nivel = findLevelByXp(xpTotalJugador);
- 
+
   document.getElementById('modal-titulo-nivel').textContent = 'Nivel ' + nivel.n;
- 
+
   // ── Personaje actual (imagen + nombre, sin descripción) ──
   const personajeActual = document.getElementById('modal-personaje-actual');
   personajeActual.innerHTML = '';
@@ -575,7 +652,7 @@ function renderModalEstado() {
   nombreP.textContent = nivel.t;
   wrapP.appendChild(nombreP);
   personajeActual.appendChild(wrapP);
- 
+
   // ── Artefacto actual (imagen + nombre, SIN descripción — corregido) ──
   const artefactoActual = document.getElementById('modal-artefacto-actual');
   artefactoActual.innerHTML = '';
@@ -587,17 +664,17 @@ function renderModalEstado() {
   nombreA.textContent = nivel.art;
   wrapA.appendChild(nombreA);
   artefactoActual.appendChild(wrapA);
- 
+
   // ── Histórico (scrolleable, en paralelo en ambas columnas) ──
   const histPersonaje = document.getElementById('modal-personaje-historico');
   const histArtefacto = document.getElementById('modal-artefacto-historico');
   histPersonaje.innerHTML = '';
   histArtefacto.innerHTML = '';
- 
+
   for (let n = nivel.n - 1; n >= 1; n--) {
     const lvl = LEVELS.find(l => l.n === n);
     if (!lvl) continue;
- 
+
     const itemP = document.createElement('div');
     itemP.className = 'modal-hist-item';
     itemP.appendChild(crearImagenClickeable(imgNivel(lvl.n), lvl.t));
@@ -606,7 +683,7 @@ function renderModalEstado() {
     nombreHistP.textContent = 'Nivel ' + lvl.n + ' — ' + lvl.t;
     itemP.appendChild(nombreHistP);
     histPersonaje.appendChild(itemP);
- 
+
     const itemA = document.createElement('div');
     itemA.className = 'modal-hist-item';
     itemA.appendChild(crearImagenClickeable(imgArtefacto(lvl.n), lvl.art));
@@ -617,24 +694,24 @@ function renderModalEstado() {
     histArtefacto.appendChild(itemA);
   }
 }
- 
+
 async function probarPassword() {
   const input = document.getElementById('password-input');
   const status = document.getElementById('password-status');
   const texto = input.value.trim();
   if (!texto) return;
- 
+
   const match = LEVELS.find(l => l.pw.toLowerCase() === texto.toLowerCase());
- 
+
   if (!match) {
     status.textContent = 'Contraseña incorrecta.';
     status.style.color = 'var(--red-bright)';
     return;
   }
- 
+
   await refrescarXpBackend();
   const nivelActual = findLevelByXp(xpTotalJugador);
- 
+
   if (match.n === nivelActual.n) {
     status.textContent = 'Ya estás en el Nivel ' + match.n + '.';
     status.style.color = 'var(--red-bright)';
@@ -642,7 +719,7 @@ async function probarPassword() {
     input.value = '';
     return;
   }
- 
+
   const xpBackend = await establecerXpBackend(match.xp);
   xpTotalJugador = (xpBackend !== null) ? xpBackend : match.xp;
   renderState();
@@ -650,18 +727,18 @@ async function probarPassword() {
   status.textContent = 'Salto directo al Nivel ' + match.n + ' — ' + match.t;
   status.style.color = 'var(--green-magic)';
   input.value = '';
- 
+
   const emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.remove();
- 
+
   appendLevelUp(match);
 }
- 
+
 function appendMessage(role, text) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'msg ' + role;
- 
+
   const avatarDiv = document.createElement('div');
   if (role === 'jugador') {
     avatarDiv.className = 'avatar';
@@ -672,7 +749,7 @@ function appendMessage(role, text) {
     avatarDiv.className = 'avatar-valis-emoji';
     avatarDiv.textContent = '🦊';
   }
- 
+
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'bubble';
   const name = document.createElement('div');
@@ -681,7 +758,7 @@ function appendMessage(role, text) {
   const inner = document.createElement('div');
   inner.className = 'bubble-inner';
   inner.textContent = text;
- 
+
   bubbleDiv.appendChild(name);
   bubbleDiv.appendChild(inner);
   div.appendChild(avatarDiv);
@@ -689,16 +766,16 @@ function appendMessage(role, text) {
   container.appendChild(div);
   scrollToBottom();
 }
- 
+
 function appendValisTurno(resultado) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'msg valis';
- 
+
   const avatarDiv = document.createElement('div');
   avatarDiv.className = 'avatar-valis-emoji';
   avatarDiv.textContent = '🦊';
- 
+
   const bubbleDiv = document.createElement('div');
   bubbleDiv.className = 'bubble';
   const name = document.createElement('div');
@@ -706,33 +783,33 @@ function appendValisTurno(resultado) {
   name.textContent = 'VALIS';
   const inner = document.createElement('div');
   inner.className = 'bubble-inner';
- 
+
   const xpLine = document.createElement('div');
   xpLine.className = 'xp-gain-text';
   xpLine.textContent = 'Sumaste +' + resultado.xpGanada + ' XP';
   inner.appendChild(xpLine);
- 
+
   const fragmento = document.createElement('div');
   fragmento.className = 'fragmento-text';
   const frasesNivel = FRAGMENTOS[resultado.nivelDespues.n];
   fragmento.textContent = frasesNivel ? frasesNivel[Math.floor(Math.random() * frasesNivel.length)] : '';
   inner.appendChild(fragmento);
- 
+
   bubbleDiv.appendChild(name);
   bubbleDiv.appendChild(inner);
   div.appendChild(avatarDiv);
   div.appendChild(bubbleDiv);
   container.appendChild(div);
- 
+
   if (resultado.subioDeNivel) {
     for (const lvl of resultado.nivelesSubidos) {
       appendLevelUp(lvl);
     }
   }
- 
+
   scrollToBottom();
 }
- 
+
 function appendLevelUp(lvl) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
@@ -752,7 +829,7 @@ function appendLevelUp(lvl) {
   container.appendChild(div);
   scrollToBottom();
 }
- 
+
 function appendError(message) {
   const container = document.getElementById('messages');
   const div = document.createElement('div');
@@ -761,29 +838,29 @@ function appendError(message) {
   container.appendChild(div);
   scrollToBottom();
 }
- 
+
 function scrollToBottom() {
   const m = document.getElementById('messages');
   m.scrollTop = m.scrollHeight;
 }
- 
+
 async function sendMessage() {
   const descInput = document.getElementById('task-desc-input');
   const xp = 111;
   const desc = descInput.value.trim() || 'Tarea';
- 
+
   const emptyState = document.getElementById('empty-state');
   if (emptyState) emptyState.remove();
- 
+
   appendMessage('jugador', '+' + xp + ' por ' + desc);
   descInput.value = '';
   updateCharCount();
- 
+
   await refrescarXpBackend();
   const xpAntes = xpTotalJugador;
   const xpDespuesBackend = await sumarXpBackend(xp);
   const xpDespuesReal = (xpDespuesBackend !== null) ? xpDespuesBackend : (xpAntes + xp);
- 
+
   const resultado = procesarTarea(xpAntes, xp, desc, xpDespuesReal);
   xpTotalJugador = resultado.xpDespues;
   appendValisTurno(resultado);
@@ -791,42 +868,27 @@ async function sendMessage() {
   guardarPartida();
   await registrarTareaDelDia(desc, xp);
 }
- 
+
 document.getElementById('password-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault();
     probarPassword();
   }
 });
- 
+
 document.getElementById('task-desc-input').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault();
     sendMessage();
   }
 });
- 
+
 document.getElementById('task-desc-input').addEventListener('input', updateCharCount);
- 
+
 function updateCharCount() {
   const len = document.getElementById('task-desc-input').value.length;
   document.getElementById('char-count').textContent = len + ' caracteres';
 }
- 
+
 cargarPartida();
 renderState();
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-

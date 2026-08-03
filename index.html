@@ -1,3 +1,6 @@
+
+
+Index · HTML
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,9 +15,9 @@
 <script src="niveles.js"></script>
 </head>
 <body>
-
+ 
 <div class="stars" id="stars"></div>
-
+ 
 <div id="app">
   <header>
     <div class="header-pixel-frame">
@@ -23,9 +26,9 @@
       <div class="subtitle">Registro de tareas &bull; Director: VALIS</div>
     </div>
   </header>
-
+ 
   <div class="rune-line"></div>
-
+ 
   <div id="auth-panel">
     <div class="auth-row">
       <button id="login-btn" class="text-btn" onclick="iniciarSesionGoogle()">Iniciar sesión con Google</button>
@@ -33,7 +36,7 @@
       <span id="user-info"></span>
     </div>
   </div>
-
+ 
   <div id="state-panel">
     <div id="state-row">
       <span id="state-level">Nivel 1</span>
@@ -44,7 +47,7 @@
     <div id="xp-bar-label"></div>
     <a href="#" class="detalles-link" onclick="abrirModalEstado(); return false;">Click para más detalles</a>
   </div>
-
+ 
   <div id="save-panel">
     <div class="save-row">
       <button class="send-btn" onclick="exportarPartida()" title="Descargar partida">💾</button>
@@ -53,9 +56,9 @@
       <span id="save-status"></span>
     </div>
   </div>
-
+ 
   <div class="rune-line"></div>
-
+ 
   <div id="input-area">
     <div class="input-row">
       <input
@@ -71,7 +74,7 @@
       <span style="color:var(--text-dim);font-size:10px;letter-spacing:1px;">ENTER = ENVIAR</span>
     </div>
   </div>
-
+ 
   <div id="chat-window" class="pixel-border">
     <div id="messages">
       <div id="empty-state">
@@ -83,9 +86,9 @@
       </div>
     </div>
   </div>
-
+ 
   <div class="rune-line"></div>
-
+ 
   <div id="password-panel">
     <div class="password-row">
       <input type="text" id="password-input" placeholder="Contraseña de un nivel..." />
@@ -93,10 +96,10 @@
     </div>
     <div id="password-status"></div>
   </div>
-
+ 
   <footer>La Odisea de los Haikus Gnósticos &mdash; 100% offline</footer>
 </div>
-
+ 
 <div id="estado-modal-overlay" class="modal-overlay hidden" onclick="cerrarModalEstadoOverlay(event)">
   <div class="modal-box modal-box-wide" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="cerrarModalEstado()" aria-label="Cerrar">✕</button>
@@ -117,11 +120,11 @@
     </div>
   </div>
 </div>
-
+ 
 <div id="lightbox-overlay" class="modal-overlay hidden" onclick="cerrarLightbox()">
   <img id="lightbox-img" src="" alt="" class="lightbox-img">
 </div>
-
+ 
 <div id="resumen-modal-overlay" class="modal-overlay hidden" onclick="cerrarResumenDiaOverlay(event)">
   <div class="modal-box" onclick="event.stopPropagation()">
     <button class="modal-close" onclick="cerrarResumenDia()" aria-label="Cerrar">✕</button>
@@ -129,9 +132,24 @@
     <div id="resumen-lista"></div>
     <div class="modal-divider"></div>
     <p id="resumen-total" style="color:var(--gold-bright);font-size:13px;text-align:center;"></p>
+    <div class="infografia-btn-row">
+      <button class="text-btn" onclick="abrirInfografia()">Infografía (Beta)</button>
+    </div>
   </div>
 </div>
-
+ 
+<div id="infografia-modal-overlay" class="modal-overlay hidden" onclick="cerrarInfografiaOverlay(event)">
+  <div class="modal-box modal-box-wide" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="cerrarInfografia()" aria-label="Cerrar">✕</button>
+    <h2 class="modal-titulo">Infografía (Beta)</h2>
+    <pre id="infografia-texto" class="infografia-pre"></pre>
+    <div class="infografia-botones">
+      <button id="infografia-copiar-btn" class="text-btn infografia-copiar" onclick="copiarInfografia()">Copiar al portapapeles</button>
+      <button class="text-btn" onclick="cerrarInfografia()">Cerrar</button>
+    </div>
+  </div>
+</div>
+ 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="fragmentos.js"></script>
@@ -147,3 +165,18 @@
 </script>
 </body>
 </html>
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
