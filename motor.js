@@ -326,7 +326,7 @@ async function registrarTareaDelDia(desc, xp) {
           'Authorization': 'Bearer ' + token,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ descripcion: desc, xp })
+        body: JSON.stringify({ descripcion: desc, xp, fecha: fechaHoy() })
       });
       if (resp.ok) return;
       throw new Error('HTTP ' + resp.status);
@@ -365,7 +365,7 @@ async function abrirResumenDia() {
   if (usandoBackend && auth.currentUser) {
     try {
       const token = await auth.currentUser.getIdToken();
-      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy', {
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy?fecha=' + fechaHoy(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -507,7 +507,7 @@ async function obtenerTareasDelDiaTexto() {
   if (usandoBackend && auth.currentUser) {
     try {
       const token = await auth.currentUser.getIdToken();
-      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy', {
+      const resp = await fetch(BACKEND_URL + '/api/tareas-dia/hoy?fecha=' + fechaHoy(), {
         headers: { 'Authorization': 'Bearer ' + token }
       });
       if (!resp.ok) throw new Error('HTTP ' + resp.status);
